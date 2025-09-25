@@ -2,21 +2,82 @@
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import PageTransition from '@/components/PageTransition';
 
+interface LoginData {
+  gymId: string;
+  password: string;
+}
+
+interface AuthResponse {
+  access_token: string;
+  user: {
+    gymId: string;
+    name: string;
+    role: string;
+    membershipType: string;
+    joinDate: string;
+  };
+}
+
 export default function LoginPage() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState<LoginData>({
+    gymId: '',
+    password: '',
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+    // Clear error when user starts typing
+    if (error) setError('');
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
 
-    // Simulate login process
-    setTimeout(() => {
+    try {
+      const response = await fetch('http://localhost:3001/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Login failed');
+      }
+
+      const authData: AuthResponse = await response.json();
+
+      // Store token and user data in localStorage
+      localStorage.setItem('access_token', authData.access_token);
+      localStorage.setItem('user', JSON.stringify(authData.user));
+
+      // Redirect to dashboard or home
+      router.push('/');
+    } catch (error) {
+      console.error('Login error:', error);
+      setError(
+        error instanceof Error
+          ? error.message
+          : 'Login failed. Please try again.'
+      );
+    } finally {
       setIsLoading(false);
-      // Handle successful login
-    }, 2000);
+    }
   };
 
   return (
@@ -86,6 +147,18 @@ export default function LoginPage() {
               </motion.p>
             </div>
 
+            {/* Error Message */}
+            {error && (
+              <motion.div
+                className="bg-red-500/20 border border-red-500/50 rounded-lg p-3 text-red-200 text-sm"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {error}
+              </motion.div>
+            )}
+
             {/* Login Form */}
             <motion.form
               onSubmit={handleLogin}
@@ -96,17 +169,20 @@ export default function LoginPage() {
             >
               <div>
                 <label
-                  htmlFor="email"
+                  htmlFor="gymId"
                   className="block text-sm font-medium text-white/90 mb-2"
                 >
-                  Email Address
+                  Gym ID
                 </label>
                 <input
-                  type="email"
-                  id="email"
+                  type="text"
+                  id="gymId"
+                  name="gymId"
+                  value={formData.gymId}
+                  onChange={handleInputChange}
                   required
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent transition-all duration-300"
-                  placeholder="Enter your email"
+                  placeholder="Enter your Gym ID (e.g., GYM001)"
                 />
               </div>
 
@@ -120,6 +196,9 @@ export default function LoginPage() {
                 <input
                   type="password"
                   id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
                   required
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent transition-all duration-300"
                   placeholder="Enter your password"
@@ -144,12 +223,35 @@ export default function LoginPage() {
               </motion.button>
             </motion.form>
 
-            {/* Additional Links */}
+            {/* Demo Credentials */}
             <motion.div
-              className="mt-6 text-center space-y-2"
+              className="mt-6 p-4 bg-white/5 rounded-lg border border-white/10"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
+            >
+              <h3 className="text-atelier-darkYellow font-semibold text-sm mb-2">
+                Demo Credentials:
+              </h3>
+              <div className="text-white/70 text-xs space-y-1">
+                <div>
+                  <strong>Admin:</strong> GYM001 / password123
+                </div>
+                <div>
+                  <strong>Trainer:</strong> GYM002 / trainer2024
+                </div>
+                <div>
+                  <strong>Member:</strong> GYM003 / member123
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Additional Links */}
+            <motion.div
+              className="mt-4 text-center space-y-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9 }}
             >
               <a
                 href="#"
