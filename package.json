@@ -1,0 +1,48 @@
+{
+  "name": "ateliers-fitness",
+  "version": "1.0.0",
+  "description": "Atelier's Fitness - A modern gym app with Next.js frontend and NestJS backend",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:web": "pnpm --filter web dev",
+    "dev:api": "pnpm --filter api start:dev",
+    "build:web": "pnpm --filter web build",
+    "build:api": "pnpm --filter api build",
+    "lint": "pnpm --filter web lint && pnpm --filter api lint",
+    "lint:fix": "pnpm --filter web lint:fix && pnpm --filter api lint:fix",
+    "typecheck": "pnpm --filter web typecheck && pnpm --filter api typecheck",
+    "test": "pnpm --filter web test && pnpm --filter api test",
+    "test:watch": "pnpm --filter web test:watch && pnpm --filter api test:watch",
+    "clean": "pnpm --filter web clean && pnpm --filter api clean",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3"
+  },
+  "lint-staged": {
+    "apps/web/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "apps/api/**/*.{js,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.1"
+}
