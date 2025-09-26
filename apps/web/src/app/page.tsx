@@ -8,6 +8,7 @@ import { Dumbbell } from 'lucide-react';
 import HeroParallax from '@/components/HeroParallax';
 import PageTransition from '../components/PageTransition';
 import LoadingPage from '../components/LoadingPage';
+import Navigation from '@/components/Navigation';
 
 export default function Home() {
   const router = useRouter();
@@ -29,15 +30,28 @@ export default function Home() {
 
   return (
     <>
+      {/* Skip Link for Accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-atelier-darkRed text-white px-4 py-2 rounded-lg z-50 focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow"
+        style={{ fontFamily: 'Roboto, sans-serif' }}
+      >
+        Skip to main content
+      </a>
+
       {/* Loading Page */}
       <LoadingPage onComplete={() => setIsLoading(false)} duration={3000} />
 
       {/* Main Page */}
       {!isLoading && (
         <PageTransition>
+          <Navigation currentPage="home" />
           <HeroParallax>
-            <div className="container mx-auto px-4 py-16 min-h-screen flex items-center">
-              <div className="grid lg:grid-cols-2 gap-12 items-center w-full">
+            <div className="container mx-auto px-4 py-16 pt-20 pb-20 min-h-screen flex items-center">
+              <main
+                id="main-content"
+                className="grid lg:grid-cols-2 gap-12 items-center w-full"
+              >
                 {/* Left Side - Content */}
                 <motion.div
                   className="text-center lg:text-left flex flex-col items-center lg:items-start"
@@ -76,11 +90,11 @@ export default function Home() {
 
                   {/* Tagline */}
                   <motion.p
-                    className="text-2xl md:text-3xl lg:text-4xl text-white/90 mb-8 max-w-lg mx-auto lg:mx-0 font-bold tracking-wide"
+                    className="text-2xl md:text-3xl lg:text-4xl text-gradient mb-8 max-w-lg mx-auto lg:mx-0 font-bold tracking-wide"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.4 }}
-                    style={{ fontFamily: 'Impact, Arial Black, sans-serif' }}
+                    style={{ fontFamily: 'Poppins, Inter, sans-serif' }}
                   >
                     Train with the spirit of champions
                   </motion.p>
@@ -94,11 +108,13 @@ export default function Home() {
                   >
                     <motion.button
                       onClick={handleBookSession}
-                      className="bg-atelier-darkRed hover:bg-red-800 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-3"
+                      className="morph-button bg-gradient-to-r from-atelier-darkRed to-red-700 hover:from-red-700 hover:to-atelier-darkRed text-white font-bold py-4 px-8 rounded-lg text-lg shadow-lg flex items-center space-x-3 accent-stroke focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:ring-offset-2 focus:ring-offset-atelier-navy"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      aria-label="Start your fitness journey"
-                      style={{ fontFamily: 'Impact, Arial Black, sans-serif' }}
+                      aria-label="Start your fitness journey - Navigate to login page"
+                      role="button"
+                      tabIndex={0}
+                      style={{ fontFamily: 'Poppins, Inter, sans-serif' }}
                     >
                       {/* Dumbbell Icon */}
                       <Dumbbell className="w-6 h-6" />
@@ -115,27 +131,33 @@ export default function Home() {
                   >
                     <div className="text-center">
                       <div
-                        className="text-3xl font-bold text-atelier-darkYellow mb-2"
+                        className="text-3xl font-bold text-gradient mb-2"
                         style={{
-                          fontFamily: 'Impact, Arial Black, sans-serif',
+                          fontFamily: 'Poppins, Inter, sans-serif',
                         }}
                       >
                         500+
                       </div>
-                      <div className="text-white/80 text-sm font-medium">
+                      <div
+                        className="text-atelier-accentWhite/80 text-sm font-medium"
+                        style={{ fontFamily: 'Roboto, sans-serif' }}
+                      >
                         Happy Clients
                       </div>
                     </div>
                     <div className="text-center">
                       <div
-                        className="text-3xl font-bold text-atelier-darkYellow mb-2"
+                        className="text-3xl font-bold text-gradient mb-2"
                         style={{
-                          fontFamily: 'Impact, Arial Black, sans-serif',
+                          fontFamily: 'Poppins, Inter, sans-serif',
                         }}
                       >
                         10+
                       </div>
-                      <div className="text-white/80 text-sm font-medium">
+                      <div
+                        className="text-atelier-accentWhite/80 text-sm font-medium"
+                        style={{ fontFamily: 'Roboto, sans-serif' }}
+                      >
                         Years Experience
                       </div>
                     </div>
@@ -236,7 +258,7 @@ export default function Home() {
 
                     {/* Founder Details Card */}
                     <motion.div
-                      className="relative z-10 mt-6 bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl"
+                      className="relative z-10 mt-6 glass-card rounded-2xl p-6"
                       initial={{
                         opacity: 0,
                         y: 50,
@@ -263,12 +285,12 @@ export default function Home() {
                     >
                       {/* Founder Name */}
                       <motion.h3
-                        className="text-2xl font-bold text-white text-center mb-2"
+                        className="text-2xl font-bold text-gradient text-center mb-2"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 1.0 }}
                         style={{
-                          fontFamily: 'Impact, Arial Black, sans-serif',
+                          fontFamily: 'Poppins, Inter, sans-serif',
                         }}
                       >
                         Arasu Mounaguru
@@ -276,11 +298,11 @@ export default function Home() {
 
                       {/* Founder Title */}
                       <motion.p
-                        className="text-atelier-darkYellow text-center mb-6 font-medium"
+                        className="text-atelier-accentWhite/80 text-center mb-6 font-medium"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 1.1 }}
-                        style={{ fontFamily: 'Arial, sans-serif' }}
+                        style={{ fontFamily: 'Roboto, sans-serif' }}
                       >
                         Founder & Head Trainer
                       </motion.p>
@@ -293,9 +315,9 @@ export default function Home() {
                         transition={{ delay: 1.2, staggerChildren: 0.1 }}
                       >
                         <h4
-                          className="text-white font-semibold text-center mb-4"
+                          className="text-atelier-darkYellow font-semibold text-center mb-4"
                           style={{
-                            fontFamily: 'Impact, Arial Black, sans-serif',
+                            fontFamily: 'Poppins, Inter, sans-serif',
                           }}
                         >
                           Achievements
@@ -309,10 +331,12 @@ export default function Home() {
                           ].map((achievement, index) => (
                             <motion.div
                               key={achievement}
-                              className="flex items-center space-x-3 text-white/90"
+                              className="flex items-center space-x-3 text-atelier-accentWhite/70 morph-button rounded-lg p-2 hover:bg-white/5"
                               initial={{ opacity: 0, x: -20 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: 1.3 + index * 0.1 }}
+                              whileHover={{ scale: 1.02 }}
+                              style={{ fontFamily: 'Roboto, sans-serif' }}
                             >
                               <div className="w-2 h-2 bg-atelier-darkYellow rounded-full flex-shrink-0"></div>
                               <span className="text-sm">{achievement}</span>
@@ -323,10 +347,11 @@ export default function Home() {
 
                       {/* Quote */}
                       <motion.blockquote
-                        className="mt-6 text-center text-white/80 italic text-sm"
+                        className="mt-6 text-center text-atelier-accentWhite/80 italic text-sm"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 1.6 }}
+                        style={{ fontFamily: 'Roboto, sans-serif' }}
                       >
                         "Fitness is not just about the body, it's about
                         transforming your entire life."
@@ -363,7 +388,7 @@ export default function Home() {
                     </div>
                   </div>
                 </motion.div>
-              </div>
+              </main>
             </div>
 
             {/* Description Section - Moved to end */}
@@ -375,8 +400,8 @@ export default function Home() {
             >
               <div className="max-w-4xl mx-auto text-center">
                 <motion.p
-                  className="text-lg md:text-xl text-white/80 leading-relaxed"
-                  style={{ fontFamily: 'Arial, sans-serif' }}
+                  className="text-lg md:text-xl text-atelier-accentWhite/80 leading-relaxed"
+                  style={{ fontFamily: 'Roboto, sans-serif' }}
                 >
                   Experience world-class training with our certified experts.
                   From beginners to athletes, we transform lives through

@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useState } from 'react';
+import Confetti from './Confetti';
 
 interface FounderCardProps {
   className?: string;
@@ -10,6 +11,7 @@ interface FounderCardProps {
 
 export default function FounderCard({ className = '' }: FounderCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const achievements = [
     'Ex Mr. India 2019',
@@ -18,20 +20,33 @@ export default function FounderCard({ className = '' }: FounderCardProps) {
     '500+ Clients Transformed',
   ];
 
+  const handleHoverStart = () => {
+    setIsHovered(true);
+    setShowConfetti(true);
+  };
+
+  const handleHoverEnd = () => {
+    setIsHovered(false);
+  };
+
+  const handleConfettiComplete = () => {
+    setShowConfetti(false);
+  };
+
   return (
     <motion.div
       className={`relative ${className}`}
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.3 }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={handleHoverStart}
+      onMouseLeave={handleHoverEnd}
       style={{
         perspective: '1000px',
       }}
     >
       <motion.div
-        className="relative bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl"
+        className="relative glass-card rounded-2xl p-8 overflow-hidden"
         style={{
           transformStyle: 'preserve-3d',
         }}
@@ -42,6 +57,8 @@ export default function FounderCard({ className = '' }: FounderCardProps) {
         }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
       >
+        {/* Confetti Animation */}
+        <Confetti isActive={showConfetti} onComplete={handleConfettiComplete} />
         {/* Glow effect */}
         <motion.div
           className="absolute inset-0 rounded-2xl opacity-0"
@@ -84,19 +101,21 @@ export default function FounderCard({ className = '' }: FounderCardProps) {
 
           {/* Name */}
           <motion.h3
-            className="text-2xl font-bold text-white text-center mb-2"
+            className="text-2xl font-bold text-gradient text-center mb-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
+            style={{ fontFamily: 'Poppins, Inter, sans-serif' }}
           >
             Rajesh Kumar
           </motion.h3>
 
           <motion.p
-            className="text-atelier-darkYellow text-center mb-6 font-medium"
+            className="text-atelier-accentWhite/80 text-center mb-6 font-medium"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
+            style={{ fontFamily: 'Roboto, sans-serif' }}
           >
             Founder & Head Trainer
           </motion.p>
@@ -108,17 +127,22 @@ export default function FounderCard({ className = '' }: FounderCardProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
           >
-            <h4 className="text-white font-semibold text-center mb-4">
+            <h4
+              className="text-atelier-darkYellow font-semibold text-center mb-4"
+              style={{ fontFamily: 'Poppins, Inter, sans-serif' }}
+            >
               Achievements
             </h4>
             <div className="space-y-2">
               {achievements.map((achievement, index) => (
                 <motion.div
                   key={achievement}
-                  className="flex items-center space-x-3 text-white/90"
+                  className="flex items-center space-x-3 text-atelier-accentWhite/70 morph-button rounded-lg p-2 hover:bg-white/5"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.8 + index * 0.1 }}
+                  whileHover={{ scale: 1.02 }}
+                  style={{ fontFamily: 'Roboto, sans-serif' }}
                 >
                   <div className="w-2 h-2 bg-atelier-darkYellow rounded-full flex-shrink-0" />
                   <span className="text-sm">{achievement}</span>
@@ -129,10 +153,11 @@ export default function FounderCard({ className = '' }: FounderCardProps) {
 
           {/* Quote */}
           <motion.blockquote
-            className="mt-6 text-center text-white/80 italic text-sm"
+            className="mt-6 text-center text-atelier-accentWhite/80 italic text-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
+            style={{ fontFamily: 'Roboto, sans-serif' }}
           >
             "Fitness is not just about the body, it's about transforming your
             entire life."

@@ -1,0 +1,185 @@
+'use client';
+
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { Home, Users, User, LogOut } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { User as UserType } from '@/types/community';
+
+interface NavigationProps {
+  currentPage?: string;
+}
+
+export default function Navigation({ currentPage = '' }: NavigationProps) {
+  const router = useRouter();
+  const [user, setUser] = useState<UserType | null>(null);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user');
+    router.push('/');
+  };
+
+  const navItems = [
+    { id: 'home', label: 'Home', icon: Home, path: '/' },
+    { id: 'community', label: 'Community', icon: Users, path: '/community' },
+  ];
+
+  return (
+    <>
+      {/* Top Navigation Bar */}
+      <motion.nav
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-white/10"
+      >
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center space-x-3 cursor-pointer"
+              onClick={() => router.push('/')}
+            >
+              <div className="w-8 h-8 rounded-lg overflow-hidden">
+                <Image
+                  src="/images/ateliers-gym-logo.jpg"
+                  alt="Atelier's Gym Logo"
+                  width={32}
+                  height={32}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              </div>
+              <span className="text-white font-bold text-lg">Atelier's</span>
+            </motion.div>
+
+            {/* User Avatar */}
+            {user && (
+              <div className="relative">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  className="flex items-center space-x-2"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-br from-atelier-darkYellow to-atelier-darkRed rounded-full flex items-center justify-center">
+                    <span className="text-black font-bold text-sm">
+                      {user.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="text-white text-sm font-medium hidden sm:block">
+                    {user.name}
+                  </span>
+                </motion.button>
+
+                {/* Profile Dropdown */}
+                {showProfileMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute right-0 top-full mt-2 w-48 glass-card rounded-xl p-2 shadow-2xl"
+                  >
+                    <div className="px-3 py-2 border-b border-white/10">
+                      <p className="text-white font-medium">{user.name}</p>
+                      <p
+                        className={`text-xs ${
+                          user.role === 'admin'
+                            ? 'text-atelier-darkYellow'
+                            : user.role === 'trainer'
+                              ? 'text-atelier-darkRed'
+                              : 'text-atelier-navy'
+                        }`}
+                      >
+                        {user.role} • {user.membershipType}
+                      </p>
+                    </div>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={handleLogout}
+                      className="w-full flex items-center space-x-2 px-3 py-2 text-gray-300 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-200"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span className="text-sm">Logout</span>
+                    </motion.button>
+                  </motion.div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </motion.nav>
+
+      {/* Bottom Navigation Bar */}
+      <motion.nav
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-white/10"
+      >
+        <div className="container mx-auto px-4 py-2">
+          <div className="flex items-center justify-around">
+            {navItems.map(item => {
+              const Icon = item.icon;
+              const isActive = currentPage === item.id;
+
+              return (
+                <motion.button
+                  key={item.id}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => router.push(item.path)}
+                  className={`flex flex-col items-center space-y-1 px-4 py-2 rounded-lg transition-all duration-200 ${
+                    isActive
+                      ? 'text-atelier-darkYellow'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <Icon
+                    className={`w-5 h-5 ${isActive ? 'text-atelier-darkYellow' : ''}`}
+                  />
+                  <span className="text-xs font-medium">{item.label}</span>
+                </motion.button>
+              );
+            })}
+
+            {/* Profile Tab */}
+            {user && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                className={`flex flex-col items-center space-y-1 px-4 py-2 rounded-lg transition-all duration-200 ${
+                  showProfileMenu
+                    ? 'text-atelier-darkYellow'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <User
+                  className={`w-5 h-5 ${showProfileMenu ? 'text-atelier-darkYellow' : ''}`}
+                />
+                <span className="text-xs font-medium">Profile</span>
+              </motion.button>
+            )}
+          </div>
+        </div>
+      </motion.nav>
+
+      {/* Click outside to close profile menu */}
+      {showProfileMenu && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setShowProfileMenu(false)}
+        />
+      )}
+    </>
+  );
+}

@@ -66,8 +66,8 @@ export default function LoginPage() {
       localStorage.setItem('access_token', authData.access_token);
       localStorage.setItem('user', JSON.stringify(authData.user));
 
-      // Redirect to dashboard or home
-      router.push('/');
+      // Redirect to community page
+      router.push('/community');
     } catch (error) {
       console.error('Login error:', error);
       setError(
@@ -100,7 +100,7 @@ export default function LoginPage() {
         >
           {/* Login Card */}
           <motion.div
-            className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl"
+            className="glass-card rounded-2xl p-8"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -130,18 +130,20 @@ export default function LoginPage() {
 
               {/* Title */}
               <motion.h1
-                className="text-2xl font-bold text-atelier-darkYellow mb-2"
+                className="text-2xl font-bold text-gradient mb-2"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
+                style={{ fontFamily: 'Poppins, Inter, sans-serif' }}
               >
                 Atelier's Fitness
               </motion.h1>
               <motion.p
-                className="text-white/80"
+                className="text-atelier-accentWhite/80"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
+                style={{ fontFamily: 'Roboto, sans-serif' }}
               >
                 Welcome back, champion
               </motion.p>
@@ -170,7 +172,8 @@ export default function LoginPage() {
               <div>
                 <label
                   htmlFor="gymId"
-                  className="block text-sm font-medium text-white/90 mb-2"
+                  className="block text-sm font-medium text-atelier-accentWhite/90 mb-2"
+                  style={{ fontFamily: 'Roboto, sans-serif' }}
                 >
                   Gym ID
                 </label>
@@ -181,15 +184,24 @@ export default function LoginPage() {
                   value={formData.gymId}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent transition-all duration-300"
+                  className="w-full px-4 py-3 glass border border-white/20 rounded-lg text-atelier-accentWhite placeholder-atelier-accentWhite/50 focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent transition-all duration-300 morph-button"
                   placeholder="Enter your Gym ID (e.g., GYM001)"
+                  aria-describedby="gymId-help"
+                  style={{ fontFamily: 'Roboto, sans-serif' }}
                 />
+                <div
+                  id="gymId-help"
+                  className="text-xs text-atelier-accentWhite/60 mt-1"
+                >
+                  Format: GYM followed by 3 digits (e.g., GYM001)
+                </div>
               </div>
 
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-white/90 mb-2"
+                  className="block text-sm font-medium text-atelier-accentWhite/90 mb-2"
+                  style={{ fontFamily: 'Roboto, sans-serif' }}
                 >
                   Password
                 </label>
@@ -200,17 +212,24 @@ export default function LoginPage() {
                   value={formData.password}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent transition-all duration-300"
+                  className="w-full px-4 py-3 glass border border-white/20 rounded-lg text-atelier-accentWhite placeholder-atelier-accentWhite/50 focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent transition-all duration-300 morph-button"
                   placeholder="Enter your password"
+                  style={{ fontFamily: 'Roboto, sans-serif' }}
                 />
               </div>
 
               <motion.button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-atelier-darkRed hover:bg-red-800 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:hover:scale-100"
+                className="w-full morph-button bg-gradient-to-r from-atelier-darkRed to-red-700 hover:from-red-700 hover:to-atelier-darkRed disabled:opacity-50 text-white font-bold py-3 px-6 rounded-lg shadow-lg accent-stroke focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:ring-offset-2 focus:ring-offset-atelier-navy"
                 whileHover={{ scale: isLoading ? 1 : 1.05 }}
                 whileTap={{ scale: isLoading ? 1 : 0.95 }}
+                aria-label={
+                  isLoading
+                    ? 'Signing in, please wait'
+                    : 'Sign in to your account'
+                }
+                style={{ fontFamily: 'Poppins, Inter, sans-serif' }}
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center">
@@ -225,15 +244,21 @@ export default function LoginPage() {
 
             {/* Demo Credentials */}
             <motion.div
-              className="mt-6 p-4 bg-white/5 rounded-lg border border-white/10"
+              className="mt-6 p-4 glass-dark rounded-lg"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
             >
-              <h3 className="text-atelier-darkYellow font-semibold text-sm mb-2">
+              <h3
+                className="text-atelier-darkYellow font-semibold text-sm mb-2"
+                style={{ fontFamily: 'Poppins, Inter, sans-serif' }}
+              >
                 Demo Credentials:
               </h3>
-              <div className="text-white/70 text-xs space-y-1">
+              <div
+                className="text-atelier-accentWhite/70 text-xs space-y-1"
+                style={{ fontFamily: 'Roboto, sans-serif' }}
+              >
                 <div>
                   <strong>Admin:</strong> GYM001 / password123
                 </div>
@@ -255,15 +280,19 @@ export default function LoginPage() {
             >
               <a
                 href="#"
-                className="text-atelier-darkYellow hover:text-yellow-400 text-sm transition-colors duration-300"
+                className="text-atelier-darkYellow hover:text-yellow-400 text-sm transition-colors duration-300 morph-button"
+                style={{ fontFamily: 'Roboto, sans-serif' }}
               >
                 Forgot your password?
               </a>
-              <div className="text-white/60 text-sm">
+              <div
+                className="text-atelier-accentWhite/60 text-sm"
+                style={{ fontFamily: 'Roboto, sans-serif' }}
+              >
                 Don't have an account?{' '}
                 <a
                   href="#"
-                  className="text-atelier-darkYellow hover:text-yellow-400 transition-colors duration-300"
+                  className="text-atelier-darkYellow hover:text-yellow-400 transition-colors duration-300 morph-button"
                 >
                   Sign up here
                 </a>
