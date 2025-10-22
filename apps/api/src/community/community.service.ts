@@ -118,9 +118,7 @@ export class CommunityService {
     const hasMore = posts.length > limit;
     const resultPosts = hasMore ? posts.slice(0, -1) : posts;
     const nextCursor = hasMore
-      ? (
-          resultPosts[resultPosts.length - 1] as Record<string, unknown>
-        ).createdAt.toISOString()
+      ? (resultPosts[resultPosts.length - 1] as any).createdAt.toISOString()
       : undefined;
 
     return {
