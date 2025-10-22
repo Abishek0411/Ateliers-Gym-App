@@ -1,5 +1,13 @@
+export interface Comment {
+  _id: string;
+  userId: string;
+  userName: string;
+  text: string;
+  createdAt: string;
+}
+
 export interface Post {
-  id: string;
+  _id: string;
   authorId: string;
   authorName: string;
   authorRole: 'member' | 'trainer' | 'admin';
@@ -16,6 +24,10 @@ export interface Post {
   musclesWorked: string[];
   mediaUrl?: string;
   mediaType?: 'image' | 'video';
+  cloudinaryPublicId?: string;
+  cloudinaryResourceType?: 'image' | 'video';
+  likes: string[]; // Array of gymIds who liked the post
+  comments: Comment[];
   createdAt: string;
   updatedAt: string;
 }

@@ -2,89 +2,71 @@
 
 import { motion } from 'framer-motion';
 import { CldImage, CldVideoPlayer } from 'next-cloudinary';
-import { Post, User } from '@/types/community';
+import { Post, User, Comment } from '@/types/community';
 import {
+  Heart,
+  MessageCircle,
+  Edit,
   Trash2,
   Clock,
   User as UserIcon,
   Shield,
   Crown,
-  Heart,
-  MessageCircle,
+  MoreVertical,
   X,
 } from 'lucide-react';
 import { useState } from 'react';
-import { communityApi } from '@/lib/api/community';
 import CommentComposer from './CommentComposer';
 
-interface PostCardProps {
+interface MyPostCardProps {
   post: Post;
   currentUser?: User | null;
+  onUpdate?: (updatedPost: Post) => void;
   onDelete?: (postId: string) => void;
   onLikeToggle?: (postId: string) => void;
   onCommentAdd?: (postId: string, text: string) => void;
   onCommentDelete?: (postId: string, commentId: string) => void;
-  index: number;
 }
 
 const roleIcons = {
-  admin: <Crown className="w-4 h-4 text-atelier-darkYellow" />,
-  trainer: <Shield className="w-4 h-4 text-atelier-darkRed" />,
-  member: <UserIcon className="w-4 h-4 text-atelier-navy" />,
+  admin: Shield,
+  trainer: Crown,
+  member: UserIcon,
 };
 
 const roleColors = {
-  admin:
-    'bg-atelier-darkYellow/20 text-atelier-darkYellow border-atelier-darkYellow/30',
-  trainer:
-    'bg-atelier-darkRed/20 text-atelier-darkRed border-atelier-darkRed/30',
-  member: 'bg-atelier-navy/20 text-atelier-navy border-atelier-navy/30',
+  admin: 'text-atelier-darkYellow',
+  trainer: 'text-atelier-darkRed',
+  member: 'text-atelier-navy',
 };
 
-export default function PostCard({
+export default function MyPostCard({
   post,
   currentUser,
+  onUpdate,
   onDelete,
   onLikeToggle,
   onCommentAdd,
   onCommentDelete,
-  index,
-}: PostCardProps) {
+}: MyPostCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [showActions, setShowActions] = useState(false);
   const [isLiked, setIsLiked] = useState(
     currentUser ? post.likes.includes(currentUser.gymId) : false
   );
 
-  // Extract public ID from Cloudinary URL
-  const getCloudinaryPublicId = (url: string) => {
-    if (!url) return '';
-    const match = url.match(/\/v\d+\/(.+)$/);
-    return match ? match[1] : url;
-  };
-
-  // Generate optimized Cloudinary URL with transformations
-  const getOptimizedImageUrl = (url: string) => {
-    const publicId = getCloudinaryPublicId(url);
-    if (!publicId) return url;
-
-    // Use Cloudinary transformations for better performance
-    // f_auto: automatic format (WebP/AVIF when supported)
-    // q_auto: automatic quality compression
-    // w_800,h_600,c_fill: responsive sizing with crop
-    return `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/f_auto,q_auto,w_800,h_600,c_fill/${publicId}`;
-  };
-
-  const canDelete =
-    currentUser &&
-    (post.authorId === currentUser.gymId || currentUser.role === 'admin');
+  const RoleIcon = roleIcons[post.authorRole];
+  const roleColor = roleColors[post.authorRole];
 
   const handleDelete = async () => {
-    if (!onDelete || !canDelete) return;
+    if (!onDelete) return;
 
     setIsDeleting(true);
     try {
       await onDelete(post._id);
+    } catch (error) {
+      console.error('Failed to delete post:', error);
     } finally {
       setIsDeleting(false);
     }
@@ -133,109 +115,154 @@ export default function PostCard({
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
     if (diffInSeconds < 86400)
       return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    if (diffInSeconds < 2592000)
-      return `${Math.floor(diffInSeconds / 86400)}d ago`;
-
-    return date.toLocaleDateString();
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
   };
+
+  const getCloudinaryPublicId = (url: string) => {
+    if (!url) return '';
+    const match = url.match(/\/v\d+\/(.+)$/);
+    return match ? match[1] : url;
+  };
+
+  const canEdit =
+    currentUser &&
+    (post.authorId === currentUser.gymId || currentUser.role === 'admin');
+
+  const canDelete =
+    currentUser &&
+    (post.authorId === currentUser.gymId || currentUser.role === 'admin');
 
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.5,
-        delay: index * 0.1,
-        ease: 'easeOut',
-      }}
-      className="glass-card rounded-2xl p-6 space-y-4 hover:shadow-2xl transition-all duration-300"
+      className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300"
     >
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-atelier-darkYellow to-atelier-darkRed flex items-center justify-center">
-            <span className="text-white font-bold text-sm">
+          <div className="w-10 h-10 bg-gradient-to-br from-atelier-darkYellow to-atelier-darkRed rounded-full flex items-center justify-center">
+            <span className="text-black font-bold text-sm">
               {post.authorName.charAt(0).toUpperCase()}
             </span>
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h3 className="font-semibold text-white">{post.authorName}</h3>
-              <div
-                className={`px-2 py-1 rounded-full text-xs font-medium border flex items-center space-x-1 ${roleColors[post.authorRole]}`}
-              >
-                {roleIcons[post.authorRole]}
-                <span className="capitalize">{post.authorRole}</span>
-              </div>
+              <h3 className="text-white font-semibold">{post.authorName}</h3>
+              <RoleIcon className={`w-4 h-4 ${roleColor}`} />
             </div>
-            <div className="flex items-center space-x-1 text-gray-400 text-sm">
+            <div className="flex items-center space-x-2 text-gray-400 text-sm">
               <Clock className="w-3 h-3" />
               <span>{formatTimeAgo(post.createdAt)}</span>
             </div>
           </div>
         </div>
 
-        {canDelete && (
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="p-2 rounded-full hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-colors disabled:opacity-50"
-            aria-label="Delete post"
-          >
-            <Trash2 className="w-4 h-4" />
-          </motion.button>
+        {/* Actions Menu */}
+        {(canEdit || canDelete) && (
+          <div className="relative">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowActions(!showActions)}
+              className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+            >
+              <MoreVertical className="w-5 h-5" />
+            </motion.button>
+
+            {showActions && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="absolute right-0 top-full mt-2 w-48 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-2 shadow-2xl z-10"
+              >
+                {canEdit && onUpdate && (
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      setShowActions(false);
+                      onUpdate(post);
+                    }}
+                    className="w-full flex items-center space-x-2 px-3 py-2 text-gray-300 hover:text-atelier-darkYellow hover:bg-white/10 rounded-lg transition-all duration-200"
+                  >
+                    <Edit className="w-4 h-4" />
+                    <span className="text-sm">Edit Post</span>
+                  </motion.button>
+                )}
+
+                {canDelete && (
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      setShowActions(false);
+                      if (
+                        confirm('Are you sure you want to delete this post?')
+                      ) {
+                        handleDelete();
+                      }
+                    }}
+                    disabled={isDeleting}
+                    className="w-full flex items-center space-x-2 px-3 py-2 text-gray-300 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-200 disabled:opacity-50"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span className="text-sm">
+                      {isDeleting ? 'Deleting...' : 'Delete Post'}
+                    </span>
+                  </motion.button>
+                )}
+              </motion.div>
+            )}
+          </div>
         )}
       </div>
 
-      {/* Workout Info */}
-      <div className="flex flex-wrap gap-2">
-        <span className="px-3 py-1 bg-atelier-navy/30 text-atelier-accentWhite rounded-full text-sm font-medium">
-          {post.workoutSplit}
-        </span>
-        {post.musclesWorked.map((muscle, idx) => (
-          <span
-            key={idx}
-            className="px-2 py-1 bg-atelier-darkRed/20 text-atelier-darkRed rounded-full text-xs"
-          >
-            {muscle}
+      {/* Content */}
+      <div className="mb-4">
+        <p className="text-white text-lg leading-relaxed mb-3">{post.text}</p>
+
+        {/* Workout Info */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          <span className="px-3 py-1 bg-atelier-darkYellow/20 text-atelier-darkYellow rounded-full text-sm font-medium">
+            {post.workoutSplit}
           </span>
-        ))}
-      </div>
-
-      {/* Post Text */}
-      <p className="text-gray-200 leading-relaxed whitespace-pre-wrap">
-        {post.text}
-      </p>
-
-      {/* Media */}
-      {post.mediaUrl && (
-        <div className="relative rounded-xl overflow-hidden">
-          {post.mediaType === 'video' ? (
-            <CldVideoPlayer
-              width="100%"
-              height="auto"
-              src={post.mediaUrl}
-              controls
-              className="w-full h-auto rounded-xl"
-            />
-          ) : (
-            <CldImage
-              src={getCloudinaryPublicId(post.mediaUrl)}
-              width="800"
-              height="600"
-              alt={`Post by ${post.authorName}`}
-              className="w-full h-auto rounded-xl"
-              crop="fill"
-              gravity="auto"
-              quality="auto"
-              format="auto"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
-          )}
+          {post.musclesWorked.map((muscle, index) => (
+            <span
+              key={index}
+              className="px-3 py-1 bg-white/10 text-white rounded-full text-sm"
+            >
+              {muscle}
+            </span>
+          ))}
         </div>
-      )}
+
+        {/* Media */}
+        {post.mediaUrl && (
+          <div className="relative mt-4 bg-gray-800 rounded-xl overflow-hidden">
+            {post.mediaType === 'video' ? (
+              <CldVideoPlayer
+                src={post.mediaUrl}
+                controls
+                className="w-full h-auto rounded-xl"
+              />
+            ) : (
+              <CldImage
+                src={getCloudinaryPublicId(post.mediaUrl)}
+                width="800"
+                height="600"
+                alt={`Post by ${post.authorName}`}
+                className="w-full h-auto rounded-xl"
+                crop="fill"
+                gravity="auto"
+                quality="auto"
+                format="auto"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Actions */}
       <div className="flex items-center justify-between pt-4 border-t border-white/10">
@@ -333,6 +360,14 @@ export default function PostCard({
             )}
           </div>
         </motion.div>
+      )}
+
+      {/* Click outside to close actions menu */}
+      {showActions && (
+        <div
+          className="fixed inset-0 z-0"
+          onClick={() => setShowActions(false)}
+        />
       )}
     </motion.article>
   );

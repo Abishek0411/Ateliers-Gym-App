@@ -8,6 +8,7 @@ import PostCard from '@/components/PostCard';
 import Navigation from '@/components/Navigation';
 import CloudinaryConfig from '@/components/CloudinaryConfig';
 import { Post, CreatePostData, User } from '@/types/community';
+import { communityApi } from '@/lib/api/community';
 import { Loader2, Users, Plus } from 'lucide-react';
 
 export default function CommunityPage() {
@@ -135,10 +136,68 @@ export default function CommunityPage() {
         throw new Error('Failed to delete post');
       }
 
-      setPosts(prev => prev.filter(post => post.id !== postId));
+      setPosts(prev => prev.filter(post => post._id !== postId));
     } catch (error) {
       console.error('Failed to delete post:', error);
       setError('Failed to delete post. Please try again.');
+    }
+  };
+
+  const handleLikeToggle = async (postId: string) => {
+    try {
+      const response = await communityApi.toggleLike(postId);
+
+      setPosts(prev =>
+        prev.map(post =>
+          post._id === postId
+            ? {
+                ...post,
+                likes: response.liked
+                  ? [...post.likes, user?.gymId || '']
+                  : post.likes.filter(id => id !== user?.gymId),
+              }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error('Failed to toggle like:', error);
+    }
+  };
+
+  const handleCommentAdd = async (postId: string, text: string) => {
+    try {
+      const newComment = await communityApi.addComment(postId, text);
+
+      setPosts(prev =>
+        prev.map(post =>
+          post._id === postId
+            ? { ...post, comments: [...post.comments, newComment] }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error('Failed to add comment:', error);
+    }
+  };
+
+  const handleCommentDelete = async (postId: string, commentId: string) => {
+    try {
+      await communityApi.deleteComment(postId, commentId);
+
+      setPosts(prev =>
+        prev.map(post =>
+          post._id === postId
+            ? {
+                ...post,
+                comments: post.comments.filter(
+                  comment => comment._id !== commentId
+                ),
+              }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error('Failed to delete comment:', error);
     }
   };
 
@@ -241,10 +300,13 @@ export default function CommunityPage() {
           ) : (
             posts.map((post, index) => (
               <PostCard
-                key={post.id}
+                key={post._id}
                 post={post}
                 currentUser={user}
                 onDelete={handleDeletePost}
+                onLikeToggle={handleLikeToggle}
+                onCommentAdd={handleCommentAdd}
+                onCommentDelete={handleCommentDelete}
                 index={index}
               />
             ))

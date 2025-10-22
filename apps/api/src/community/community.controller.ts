@@ -3,8 +3,10 @@ import {
   Get,
   Post,
   Delete,
+  Patch,
   Body,
   Param,
+  Query,
   UseGuards,
   Request,
   UseInterceptors,
@@ -15,6 +17,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CommunityService } from './community.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
+import { AddCommentDto } from './dto/add-comment.dto';
+import { PaginationQueryDto } from './dto/pagination-query.dto';
 import { UploadResponseDto } from './dto/upload-response.dto';
 import { v2 as cloudinary } from 'cloudinary';
 import { ConfigService } from '@nestjs/config';
@@ -49,11 +54,62 @@ export class CommunityController {
     return this.communityService.getFeed();
   }
 
+  @Get('my-posts')
+  async getMyPosts(
+    @Query() pagination: PaginationQueryDto,
+    @Request() req: { user: User }
+  ) {
+    const user = req.user as User;
+    return this.communityService.getMyPosts(user.gymId, pagination);
+  }
+
+  @Patch(':id')
+  async updatePost(
+    @Param('id') id: string,
+    @Body() updatePostDto: UpdatePostDto,
+    @Request() req: { user: User }
+  ) {
+    const user = req.user as User;
+    return this.communityService.updatePost(id, updatePostDto, user);
+  }
+
   @Delete(':id')
   async deletePost(@Param('id') id: string, @Request() req: { user: User }) {
     const user = req.user as User;
     await this.communityService.deletePost(id, user);
     return { message: 'Post deleted successfully' };
+  }
+
+  @Post(':id/like')
+  async toggleLike(@Param('id') id: string, @Request() req: { user: User }) {
+    const user = req.user as User;
+    return this.communityService.toggleLike(id, user.gymId);
+  }
+
+  @Post(':id/comment')
+  async addComment(
+    @Param('id') id: string,
+    @Body() addCommentDto: AddCommentDto,
+    @Request() req: { user: User }
+  ) {
+    const user = req.user as User;
+    return this.communityService.addComment(
+      id,
+      user.gymId,
+      user.name,
+      addCommentDto
+    );
+  }
+
+  @Delete(':id/comment/:commentId')
+  async deleteComment(
+    @Param('id') id: string,
+    @Param('commentId') commentId: string,
+    @Request() req: { user: User }
+  ) {
+    const user = req.user as User;
+    await this.communityService.deleteComment(id, commentId, user);
+    return { message: 'Comment deleted successfully' };
   }
 
   @Post('upload')

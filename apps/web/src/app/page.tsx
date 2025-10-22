@@ -30,15 +30,6 @@ export default function Home() {
 
   return (
     <>
-      {/* Skip Link for Accessibility */}
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-atelier-darkRed text-white px-4 py-2 rounded-lg z-50 focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow"
-        style={{ fontFamily: 'Roboto, sans-serif' }}
-      >
-        Skip to main content
-      </a>
-
       {/* Loading Page */}
       <LoadingPage onComplete={() => setIsLoading(false)} duration={3000} />
 
@@ -99,16 +90,29 @@ export default function Home() {
                     Train with the spirit of champions
                   </motion.p>
 
-                  {/* CTA Button */}
+                  {/* CTA Buttons */}
                   <motion.div
-                    className="w-full flex justify-center lg:justify-start"
+                    className="w-full flex flex-row gap-3 justify-center lg:justify-start"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.8 }}
                   >
                     <motion.button
+                      onClick={() => router.push('/why-join-us')}
+                      className="morph-button bg-gradient-to-r from-atelier-darkYellow to-yellow-400 hover:from-yellow-400 hover:to-atelier-darkYellow text-black font-bold py-3 px-6 rounded-lg text-base shadow-lg flex items-center space-x-2 accent-stroke focus:outline-none focus:ring-2 focus:ring-atelier-darkRed focus:ring-offset-2 focus:ring-offset-atelier-navy"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      aria-label="Learn why you should join Atelier's - Navigate to why join us page"
+                      role="button"
+                      tabIndex={0}
+                      style={{ fontFamily: 'Poppins, Inter, sans-serif' }}
+                    >
+                      <span>Why Join Us?</span>
+                    </motion.button>
+
+                    <motion.button
                       onClick={handleBookSession}
-                      className="morph-button bg-gradient-to-r from-atelier-darkRed to-red-700 hover:from-red-700 hover:to-atelier-darkRed text-white font-bold py-4 px-8 rounded-lg text-lg shadow-lg flex items-center space-x-3 accent-stroke focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:ring-offset-2 focus:ring-offset-atelier-navy"
+                      className="morph-button bg-gradient-to-r from-atelier-darkRed to-red-700 hover:from-red-700 hover:to-atelier-darkRed text-white font-bold py-3 px-6 rounded-lg text-base shadow-lg flex items-center space-x-2 accent-stroke focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:ring-offset-2 focus:ring-offset-atelier-navy"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       aria-label="Start your fitness journey - Navigate to login page"
@@ -117,7 +121,7 @@ export default function Home() {
                       style={{ fontFamily: 'Poppins, Inter, sans-serif' }}
                     >
                       {/* Dumbbell Icon */}
-                      <Dumbbell className="w-6 h-6" />
+                      <Dumbbell className="w-5 h-5" />
                       <span>Let's Start</span>
                     </motion.button>
                   </motion.div>
@@ -353,8 +357,7 @@ export default function Home() {
                         transition={{ delay: 1.6 }}
                         style={{ fontFamily: 'Roboto, sans-serif' }}
                       >
-                        "Fitness is not just about the body, it's about
-                        transforming your entire life."
+                        "Your Body is a Temple, But only if you Treat it as One"
                       </motion.blockquote>
                     </motion.div>
 

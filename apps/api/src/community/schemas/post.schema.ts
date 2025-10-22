@@ -1,5 +1,24 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+
+// Comment subdocument schema
+@Schema({ _id: true })
+export class Comment {
+  @Prop({ type: Types.ObjectId, default: () => new Types.ObjectId() })
+  _id: Types.ObjectId;
+
+  @Prop({ required: true })
+  userId: string;
+
+  @Prop({ required: true })
+  userName: string;
+
+  @Prop({ required: true })
+  text: string;
+
+  @Prop({ default: Date.now })
+  createdAt: Date;
+}
 
 export type PostDocument = Post & Document;
 
@@ -43,6 +62,13 @@ export class Post {
 
   @Prop()
   cloudinaryResourceType?: 'image' | 'video';
+
+  // Social features
+  @Prop({ type: [String], default: [] })
+  likes: string[]; // Array of gymIds who liked the post
+
+  @Prop({ type: [Comment], default: [] })
+  comments: Comment[];
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
@@ -51,3 +77,4 @@ export const PostSchema = SchemaFactory.createForClass(Post);
 PostSchema.index({ createdAt: -1 }); // For feed queries (latest first)
 PostSchema.index({ authorId: 1 }); // For user's posts
 PostSchema.index({ workoutSplit: 1 }); // For filtering by workout type
+PostSchema.index({ 'comments.createdAt': -1 }); // For comment sorting

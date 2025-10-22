@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { Home, Users, User, LogOut } from 'lucide-react';
+import { Home, Users, User, LogOut, FileText, Calendar } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { User as UserType } from '@/types/community';
@@ -32,6 +32,7 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
   const navItems = [
     { id: 'home', label: 'Home', icon: Home, path: '/' },
     { id: 'community', label: 'Community', icon: Users, path: '/community' },
+    { id: 'tracking', label: 'Tracking', icon: Calendar, path: '/tracking' },
   ];
 
   return (
@@ -86,9 +87,9 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="absolute right-0 top-full mt-2 w-48 glass-card rounded-xl p-2 shadow-2xl"
+                    className="absolute right-0 top-full mt-2 w-56 bg-black/90 backdrop-blur-md border border-white/20 rounded-xl p-2 shadow-2xl z-50"
                   >
-                    <div className="px-3 py-2 border-b border-white/10">
+                    <div className="px-3 py-2 border-b border-white/20">
                       <p className="text-white font-medium">{user.name}</p>
                       <p
                         className={`text-xs ${
@@ -96,12 +97,27 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
                             ? 'text-atelier-darkYellow'
                             : user.role === 'trainer'
                               ? 'text-atelier-darkRed'
-                              : 'text-atelier-navy'
+                              : 'text-gray-400'
                         }`}
                       >
                         {user.role} • {user.membershipType}
                       </p>
                     </div>
+
+                    {/* My Posts Option */}
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        router.push('/profile/my-posts');
+                      }}
+                      className="w-full flex items-center space-x-2 px-3 py-2 text-gray-300 hover:text-atelier-darkYellow hover:bg-white/10 rounded-lg transition-all duration-200"
+                    >
+                      <FileText className="w-4 h-4" />
+                      <span className="text-sm">My Posts</span>
+                    </motion.button>
+
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -136,7 +152,10 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
                   key={item.id}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => router.push(item.path)}
+                  onClick={() => {
+                    console.log('Navigating to:', item.path);
+                    router.push(item.path);
+                  }}
                   className={`flex flex-col items-center space-y-1 px-4 py-2 rounded-lg transition-all duration-200 ${
                     isActive
                       ? 'text-atelier-darkYellow'

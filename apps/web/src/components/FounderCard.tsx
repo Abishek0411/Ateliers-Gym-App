@@ -159,8 +159,7 @@ export default function FounderCard({ className = '' }: FounderCardProps) {
             transition={{ delay: 1.2 }}
             style={{ fontFamily: 'Roboto, sans-serif' }}
           >
-            "Fitness is not just about the body, it's about transforming your
-            entire life."
+            "Your body is a temple But only if you treat it as one"
           </motion.blockquote>
         </div>
       </motion.div>
