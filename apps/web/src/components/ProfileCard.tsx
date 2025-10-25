@@ -7,9 +7,15 @@ import Image from 'next/image';
 
 interface ProfileCardProps {
   user: User;
+  onEditProfile?: () => void;
+  onViewProgress?: () => void;
 }
 
-export default function ProfileCard({ user }: ProfileCardProps) {
+export default function ProfileCard({
+  user,
+  onEditProfile,
+  onViewProgress,
+}: ProfileCardProps) {
   const getRoleColor = (role: string) => {
     switch (role) {
       case 'admin':
@@ -142,6 +148,7 @@ export default function ProfileCard({ user }: ProfileCardProps) {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
+          onClick={onEditProfile}
           className="w-full bg-atelier-darkYellow/20 text-atelier-darkYellow border border-atelier-darkYellow/30 rounded-lg py-2 px-4 text-sm font-medium transition-all hover:bg-atelier-darkYellow/30"
         >
           Edit Profile
@@ -150,6 +157,7 @@ export default function ProfileCard({ user }: ProfileCardProps) {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
+          onClick={onViewProgress}
           className="w-full bg-white/10 text-gray-300 border border-white/20 rounded-lg py-2 px-4 text-sm font-medium transition-all hover:bg-white/20"
         >
           View Progress

@@ -88,7 +88,7 @@ export default function MeasurementEditorModal({
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 w-full max-w-md"
+        className="bg-black/80 backdrop-blur-md rounded-2xl p-6 border border-white/30 w-full max-w-md shadow-2xl"
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-bold text-white">
@@ -117,7 +117,7 @@ export default function MeasurementEditorModal({
                 name="date"
                 value={formData.date}
                 onChange={handleInputChange}
-                className="w-full bg-white/10 border border-white/20 rounded-lg pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent"
+                className="w-full bg-white/20 border border-white/40 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent"
               />
             </div>
           </div>
@@ -138,7 +138,7 @@ export default function MeasurementEditorModal({
                 max="300"
                 step="0.1"
                 placeholder="Enter weight"
-                className="w-full bg-white/10 border border-white/20 rounded-lg pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent"
+                className="w-full bg-white/20 border border-white/40 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent"
               />
             </div>
           </div>
@@ -160,7 +160,7 @@ export default function MeasurementEditorModal({
                   max="200"
                   step="0.1"
                   placeholder="Chest"
-                  className="w-full bg-white/10 border border-white/20 rounded-lg pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent"
+                  className="w-full bg-white/20 border border-white/40 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent"
                 />
               </div>
             </div>
@@ -180,7 +180,7 @@ export default function MeasurementEditorModal({
                   max="200"
                   step="0.1"
                   placeholder="Waist"
-                  className="w-full bg-white/10 border border-white/20 rounded-lg pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent"
+                  className="w-full bg-white/20 border border-white/40 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent"
                 />
               </div>
             </div>
@@ -201,7 +201,7 @@ export default function MeasurementEditorModal({
                 max="200"
                 step="0.1"
                 placeholder="Hips"
-                className="w-full bg-white/10 border border-white/20 rounded-lg pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent"
+                className="w-full bg-white/20 border border-white/40 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent"
               />
             </div>
           </div>
@@ -219,7 +219,7 @@ export default function MeasurementEditorModal({
                 onChange={handleInputChange}
                 rows={3}
                 placeholder="Add any notes about this measurement..."
-                className="w-full bg-white/10 border border-white/20 rounded-lg pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent resize-none"
+                className="w-full bg-white/20 border border-white/40 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-atelier-darkYellow focus:border-transparent resize-none"
               />
             </div>
           </div>

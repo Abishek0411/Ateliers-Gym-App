@@ -68,6 +68,14 @@ export default function ProfilePage() {
     setUser(updatedUser);
   };
 
+  const handleEditProfile = () => {
+    setActiveTab('edit');
+  };
+
+  const handleViewProgress = () => {
+    setActiveTab('measurements');
+  };
+
   const tabs = [
     { id: 'overview', label: 'Overview', icon: UserIcon },
     { id: 'edit', label: 'Edit Profile', icon: Edit3 },
@@ -147,7 +155,11 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Left Sidebar - Profile Card */}
           <div className="lg:col-span-1">
-            <ProfileCard user={user} />
+            <ProfileCard
+              user={user}
+              onEditProfile={handleEditProfile}
+              onViewProgress={handleViewProgress}
+            />
           </div>
 
           {/* Right Content - Tabs */}

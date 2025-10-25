@@ -2,7 +2,15 @@
 
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { Home, Users, User, LogOut, FileText, Calendar } from 'lucide-react';
+import {
+  Home,
+  Users,
+  User,
+  LogOut,
+  FileText,
+  Calendar,
+  Trophy,
+} from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { User as UserType } from '@/types/community';
@@ -32,6 +40,12 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
   const navItems = [
     { id: 'home', label: 'Home', icon: Home, path: '/' },
     { id: 'community', label: 'Community', icon: Users, path: '/community' },
+    {
+      id: 'challenges',
+      label: 'Challenges',
+      icon: Trophy,
+      path: '/challenges',
+    },
     { id: 'tracking', label: 'Tracking', icon: Calendar, path: '/tracking' },
   ];
 
@@ -131,6 +145,22 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
                       <FileText className="w-4 h-4" />
                       <span className="text-sm">My Posts</span>
                     </motion.button>
+
+                    {/* Admin/Trainer Challenges Option */}
+                    {(user.role === 'admin' || user.role === 'trainer') && (
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => {
+                          setShowProfileMenu(false);
+                          router.push('/admin/challenges');
+                        }}
+                        className="w-full flex items-center space-x-2 px-3 py-2 text-gray-300 hover:text-atelier-darkYellow hover:bg-white/10 rounded-lg transition-all duration-200"
+                      >
+                        <Trophy className="w-4 h-4" />
+                        <span className="text-sm">Manage Challenges</span>
+                      </motion.button>
+                    )}
 
                     <motion.button
                       whileHover={{ scale: 1.02 }}

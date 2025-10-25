@@ -69,11 +69,11 @@ pnpm dev:api
 
 The app comes with pre-seeded demo users:
 
-| Gym ID | Password | Role | Membership |
-|--------|----------|------|------------|
-| GYM001 | password123 | admin | VIP |
-| GYM002 | trainer2024 | trainer | Premium |
-| GYM003 | member123 | member | Basic |
+| Gym ID | Password | Role | Membership | Privileges |
+|--------|----------|------|------------|------------|
+| GYM001 | password123 | admin | VIP | Full system access, challenge management |
+| GYM002 | trainer2024 | trainer | Premium | Challenge management, member oversight |
+| GYM003 | member123 | member | Basic | Standard member features |
 
 ### Profile Onboarding Flow
 
@@ -213,6 +213,28 @@ Pre-commit hooks automatically run:
 - **`users`** - User profiles, authentication, and extended profile data
 - **`posts`** - Community posts with media, likes, and comments
 - **`attendance`** - Check-in records and attendance tracking
+- **`challenges`** - Fitness challenges with tasks and metadata
+- **`participations`** - User progress tracking for challenges
+
+### Role-Based Access Control
+
+#### **Admin (GYM001)**
+- Full system access
+- Create, edit, and delete challenges
+- View all user data and analytics
+- Manage gym-wide settings
+
+#### **Trainer (GYM002)**
+- Create and manage challenges for members
+- View member progress and participation
+- Access to attendance tracking
+- Member oversight capabilities
+
+#### **Member (GYM003)**
+- Join and participate in challenges
+- Track personal progress and streaks
+- View leaderboards and rankings
+- Access community features
 
 ### Cloudinary Integration
 - **Media Storage** - Images and videos stored in Cloudinary
