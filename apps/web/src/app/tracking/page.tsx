@@ -41,35 +41,39 @@ export default function TrackingPage() {
   >([]);
   const router = useRouter();
 
-  const loadAttendanceStats = useCallback(async () => {
-    try {
-      const token = localStorage.getItem('access_token');
-      if (!token || !user?.gymId) return;
+  const loadAttendanceStats = useCallback(
+    async (userId?: string) => {
+      try {
+        const token = localStorage.getItem('access_token');
+        const currentUserId = userId || user?.gymId;
+        if (!token || !currentUserId) return;
 
-      const response = await fetch(
-        `http://localhost:3001/attendance/user/${user.gymId}?month=${selectedMonth}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const response = await fetch(
+          `http://localhost:3001/attendance/user/${currentUserId}?month=${selectedMonth}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to load attendance stats');
         }
-      );
 
-      if (!response.ok) {
-        throw new Error('Failed to load attendance stats');
+        const data = await response.json();
+        setStats(data);
+        setError(null); // Clear any previous errors
+
+        // Auto-clear any lingering errors after successful load
+        setTimeout(() => setError(null), 100);
+      } catch (error) {
+        console.error('Failed to load attendance stats:', error);
+        setError('Failed to load attendance stats');
       }
-
-      const data = await response.json();
-      setStats(data);
-      setError(null); // Clear any previous errors
-
-      // Auto-clear any lingering errors after successful load
-      setTimeout(() => setError(null), 100);
-    } catch (error) {
-      console.error('Failed to load attendance stats:', error);
-      setError('Failed to load attendance stats');
-    }
-  }, [user, selectedMonth]);
+    },
+    [selectedMonth]
+  ); // Remove user dependency
 
   const loadAllUsers = useCallback(async () => {
     try {
@@ -114,7 +118,10 @@ export default function TrackingPage() {
       setError(null); // Clear any previous errors
 
       // Load attendance stats for all users
-      await loadAttendanceStats();
+      if (userData) {
+        const user = JSON.parse(userData);
+        await loadAttendanceStats(user.gymId);
+      }
 
       // Only load all users for trainers and admins (for manual check-in feature)
       if (userData) {
@@ -129,7 +136,7 @@ export default function TrackingPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [router, loadAttendanceStats, loadAllUsers]);
+  }, [router]); // Remove loadAttendanceStats and loadAllUsers from dependencies
 
   useEffect(() => {
     loadUserAndStats();
@@ -137,7 +144,7 @@ export default function TrackingPage() {
 
   useEffect(() => {
     if (user) {
-      loadAttendanceStats();
+      loadAttendanceStats(user.gymId);
     }
   }, [selectedMonth, user, loadAttendanceStats]);
 
@@ -170,7 +177,7 @@ export default function TrackingPage() {
       }
 
       // Refresh stats after successful check-in
-      await loadAttendanceStats();
+      await loadAttendanceStats(user.gymId);
     } catch (error) {
       console.error('Failed to check in:', error);
       setError('Failed to check in. Please try again.');
@@ -214,7 +221,9 @@ export default function TrackingPage() {
       }
 
       // Refresh stats after successful manual check-in
-      await loadAttendanceStats();
+      if (user) {
+        await loadAttendanceStats(user.gymId);
+      }
     } catch (error) {
       console.error('Failed to add manual check-in:', error);
       throw error;
