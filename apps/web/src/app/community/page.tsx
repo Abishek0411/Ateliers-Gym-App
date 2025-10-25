@@ -9,7 +9,7 @@ import Navigation from '@/components/Navigation';
 import CloudinaryConfig from '@/components/CloudinaryConfig';
 import { Post, CreatePostData, User } from '@/types/community';
 import { communityApi } from '@/lib/api/community';
-import { Loader2, Users, Plus } from 'lucide-react';
+import { Users, Plus } from 'lucide-react';
 
 export default function CommunityPage() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -35,6 +35,7 @@ export default function CommunityPage() {
       setError('Failed to load community data');
     } finally {
       setIsLoading(false);
+      // Global navigation loading handles the loading state automatically
     }
   }, [router]);
 
@@ -44,7 +45,7 @@ export default function CommunityPage() {
 
   const loadUserProfile = async (token: string) => {
     try {
-      const response = await fetch('http://localhost:3001/auth/profile', {
+      const response = await fetch('http://192.168.0.103:3001/auth/profile', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -61,7 +62,7 @@ export default function CommunityPage() {
 
   const loadPosts = async (token: string) => {
     try {
-      const response = await fetch('http://localhost:3001/community/feed', {
+      const response = await fetch('http://192.168.0.103:3001/community/feed', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -90,7 +91,7 @@ export default function CommunityPage() {
         return;
       }
 
-      const response = await fetch('http://localhost:3001/community/post', {
+      const response = await fetch('http://192.168.0.103:3001/community/post', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -123,7 +124,7 @@ export default function CommunityPage() {
       }
 
       const response = await fetch(
-        `http://localhost:3001/community/${postId}`,
+        `http://192.168.0.103:3001/community/${postId}`,
         {
           method: 'DELETE',
           headers: {
@@ -212,20 +213,7 @@ export default function CommunityPage() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-atelier-navy via-black to-atelier-darkRed flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center"
-        >
-          <Loader2 className="w-12 h-12 animate-spin text-atelier-darkYellow mx-auto mb-4" />
-          <p className="text-white text-lg">Loading community...</p>
-        </motion.div>
-      </div>
-    );
-  }
+  // Removed page-level loading - global navigation loading handles this smoothly
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-atelier-navy via-black to-atelier-darkRed">

@@ -1,0 +1,287 @@
+#!/bin/bash
+
+# 🏃‍♂️ Atelier's Fitness - Mobile Testing Script
+# This script sets up the development environment for mobile testing
+
+echo "🏋️‍♂️ Atelier's Fitness - Mobile Testing Setup"
+echo "=============================================="
+echo ""
+
+# Get the current local IP address
+LOCAL_IP=$(hostname -I | awk '{print $1}')
+
+echo "📱 Your local IP address: $LOCAL_IP"
+echo ""
+
+# Check if we're in the correct directory
+if [ ! -f "package.json" ] || [ ! -d "apps" ]; then
+    echo "❌ Error: Please run this script from the project root directory"
+    echo "   Current directory: $(pwd)"
+    echo "   Expected: /home/abishek/Downloads/proj_Ateliers"
+    exit 1
+fi
+
+echo "🔧 Setting up mobile access..."
+echo ""
+
+# Function to update all IP addresses in the codebase
+update_ip_addresses() {
+    local new_ip=$1
+    echo "📝 Updating all IP addresses to: $new_ip"
+    
+    # Update CORS configuration
+    echo "   🔧 Updating CORS configuration..."
+    sed -i "s|http://[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+:3000|http://$new_ip:3000|g" apps/api/src/main.ts
+    
+    # Update frontend API URLs
+    echo "   🌐 Updating frontend API URLs..."
+    find apps/web/src -name "*.ts" -o -name "*.tsx" | xargs sed -i "s|http://[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+:3001|http://$new_ip:3001|g"
+    find apps/web/src -name "*.ts" -o -name "*.tsx" | xargs sed -i "s|http://localhost:3001|http://$new_ip:3001|g"
+    
+    echo "   ✅ All IP addresses updated to: $new_ip"
+}
+
+# Update IP addresses
+update_ip_addresses "$LOCAL_IP"
+echo ""
+
+# Check if environment files exist
+echo "🔍 Checking environment configuration..."
+
+if [ ! -f "apps/api/.env" ]; then
+    echo "⚠️  Warning: apps/api/.env not found"
+    echo "   Please create the environment file with your MongoDB and Cloudinary credentials"
+    echo "   See README.md for required environment variables"
+    echo ""
+fi
+
+if [ ! -f "apps/web/.env.local" ]; then
+    echo "⚠️  Warning: apps/web/.env.local not found"
+    echo "   Please create the environment file with your Cloudinary credentials"
+    echo "   See README.md for required environment variables"
+    echo ""
+fi
+
+echo "🚀 Starting development servers..."
+echo ""
+
+# Function to start servers in background
+start_servers() {
+    echo "📱 Starting API server on port 3001..."
+    (cd apps/api && pnpm start:dev > ../../api.log 2>&1) &
+    API_PID=$!
+    
+    echo "🌐 Starting Web server on port 3000..."
+    (cd apps/web && pnpm dev > ../../web.log 2>&1) &
+    WEB_PID=$!
+    
+    # Wait a moment for servers to start
+    sleep 5
+    
+    echo ""
+    echo "🎉 Servers started successfully!"
+    echo ""
+    echo "📱 Mobile Access URLs:"
+    echo "   Frontend: http://$LOCAL_IP:3000"
+    echo "   Backend:  http://$LOCAL_IP:3001"
+    echo ""
+    echo "💻 Local Access URLs:"
+    echo "   Frontend: http://localhost:3000"
+    echo "   Backend:  http://localhost:3001"
+    echo ""
+    echo "🔐 Demo Login Credentials:"
+    echo "   Admin:    GYM001 / password123"
+    echo "   Trainer:  GYM002 / trainer2024"
+    echo "   Member:   GYM003 / member123"
+    echo ""
+    echo "📊 Server Status:"
+    echo "   API PID:  $API_PID"
+    echo "   Web PID:  $WEB_PID"
+    echo ""
+    echo "📝 Logs:"
+    echo "   API:  tail -f api.log"
+    echo "   Web:  tail -f web.log"
+    echo ""
+    echo "🛑 To stop servers:"
+    echo "   kill $API_PID $WEB_PID"
+    echo "   or run: pkill -f 'nest start' && pkill -f 'next dev'"
+    echo ""
+    
+    # Save PIDs for cleanup
+    echo "$API_PID" > .api_pid 2>/dev/null || true
+    echo "$WEB_PID" > .web_pid 2>/dev/null || true
+    
+    echo "✅ Mobile testing setup complete!"
+    echo "   Open http://$LOCAL_IP:3000 on your mobile device"
+    echo "   Make sure your mobile device is on the same WiFi network"
+}
+
+# Function to stop servers
+stop_servers() {
+    echo "🛑 Stopping servers..."
+    
+    if [ -f ".api_pid" ]; then
+        API_PID=$(cat .api_pid)
+        kill $API_PID 2>/dev/null
+        rm .api_pid
+    fi
+    
+    if [ -f ".web_pid" ]; then
+        WEB_PID=$(cat .web_pid)
+        kill $WEB_PID 2>/dev/null
+        rm .web_pid
+    fi
+    
+    # Kill any remaining processes
+    pkill -f 'nest start' 2>/dev/null
+    pkill -f 'next dev' 2>/dev/null
+    
+    echo "✅ Servers stopped"
+}
+
+# Function to show status
+show_status() {
+    echo "📊 Server Status:"
+    echo ""
+    
+    if [ -f ".api_pid" ]; then
+        API_PID=$(cat .api_pid)
+        if ps -p $API_PID > /dev/null; then
+            echo "✅ API Server (PID: $API_PID) - Running"
+        else
+            echo "❌ API Server - Not running"
+        fi
+    else
+        echo "❌ API Server - Not started"
+    fi
+    
+    if [ -f ".web_pid" ]; then
+        WEB_PID=$(cat .web_pid)
+        if ps -p $WEB_PID > /dev/null; then
+            echo "✅ Web Server (PID: $WEB_PID) - Running"
+        else
+            echo "❌ Web Server - Not running"
+        fi
+    else
+        echo "❌ Web Server - Not started"
+    fi
+    
+    echo ""
+    echo "📱 Mobile Access:"
+    echo "   Frontend: http://$LOCAL_IP:3000"
+    echo "   Backend:  http://$LOCAL_IP:3001"
+}
+
+# Function to show logs
+show_logs() {
+    echo "📝 Server Logs:"
+    echo ""
+    echo "🔧 API Logs (last 20 lines):"
+    echo "----------------------------------------"
+    if [ -f "api.log" ]; then
+        tail -20 api.log
+    else
+        echo "No API logs found"
+    fi
+    echo ""
+    echo "🌐 Web Logs (last 20 lines):"
+    echo "----------------------------------------"
+    if [ -f "web.log" ]; then
+        tail -20 web.log
+    else
+        echo "No Web logs found"
+    fi
+}
+
+# Function to check and update IP if changed
+check_and_update_ip() {
+    local current_ip=$(hostname -I | awk '{print $1}')
+    local stored_ip=""
+    
+    # Read stored IP if exists
+    if [ -f ".last_ip" ]; then
+        stored_ip=$(cat .last_ip)
+    fi
+    
+    if [ "$current_ip" != "$stored_ip" ]; then
+        echo "🔄 IP address changed from $stored_ip to $current_ip"
+        echo "📝 Updating configuration..."
+        update_ip_addresses "$current_ip"
+        echo "$current_ip" > .last_ip
+        echo "✅ Configuration updated for new IP: $current_ip"
+        return 0
+    else
+        echo "✅ IP address unchanged: $current_ip"
+        return 1
+    fi
+}
+
+# Main script logic
+case "$1" in
+    "start")
+        check_and_update_ip
+        start_servers
+        ;;
+    "stop")
+        stop_servers
+        ;;
+    "restart")
+        check_and_update_ip
+        stop_servers
+        sleep 2
+        start_servers
+        ;;
+    "status")
+        show_status
+        ;;
+    "logs")
+        show_logs
+        ;;
+    "clean")
+        stop_servers
+        rm -f api.log web.log .api_pid .web_pid .last_ip
+        echo "✅ Cleaned up all logs and PID files"
+        ;;
+    "update-ip")
+        check_and_update_ip
+        if [ $? -eq 0 ]; then
+            echo "🔄 Restarting servers with new IP..."
+            stop_servers
+            sleep 2
+            start_servers
+        fi
+        ;;
+    *)
+        echo "🏋️‍♂️ Atelier's Fitness - Mobile Testing"
+        echo ""
+        echo "Usage: $0 [command]"
+        echo ""
+        echo "Commands:"
+        echo "  start      - Start both API and Web servers for mobile testing"
+        echo "  stop       - Stop all running servers"
+        echo "  restart    - Restart all servers"
+        echo "  status     - Show server status"
+        echo "  logs       - Show server logs"
+        echo "  clean      - Stop servers and clean up logs"
+        echo "  update-ip  - Check for IP changes and update configuration"
+        echo ""
+        echo "Quick Start:"
+        echo "  $0 start      # Start servers for mobile testing"
+        echo "  $0 status     # Check if servers are running"
+        echo "  $0 update-ip  # Update IP if you changed networks"
+        echo "  $0 stop       # Stop servers when done"
+        echo ""
+        echo "📱 Mobile Access:"
+        echo "  Frontend: http://$LOCAL_IP:3000"
+        echo "  Backend:  http://$LOCAL_IP:3001"
+        echo ""
+        echo "🔄 Network Changes:"
+        echo "  If you switch WiFi networks, run: $0 update-ip"
+        echo "  This will automatically detect your new IP and update all URLs"
+        echo ""
+        echo "🔐 Demo Credentials:"
+        echo "  Admin:    GYM001 / password123"
+        echo "  Trainer:  GYM002 / trainer2024"
+        echo "  Member:   GYM003 / member123"
+        ;;
+esac

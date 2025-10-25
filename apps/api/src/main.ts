@@ -9,13 +9,14 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000',
-      'http://127.0.0.1:3000',
-      'http://0.0.0.0:3000',
+      'http://192.168.0.103:3000',
+      'http://192.168.0.103:3000',
       // Add your local network IP for mobile access
-      'http://10.213.71.173:3000', // Your actual local IP
-      'http://192.168.1.100:3000', // Common alternative
-      'http://192.168.0.100:3000', // Common alternative
-      'http://10.0.0.100:3000', // Another common alternative
+      'http://192.168.0.103:3000', // Current local IP for mobile access
+      'http://192.168.0.103:3000', // Your actual local IP
+      'http://192.168.0.103:3000', // Common alternative
+      'http://192.168.0.103:3000', // Common alternative
+      'http://192.168.0.103:3000', // Another common alternative
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,

@@ -107,6 +107,7 @@ export default function ChallengesPage() {
         await loadChallenges();
       } finally {
         setIsLoading(false);
+        // Global navigation loading handles the loading state automatically
       }
     };
 
@@ -157,20 +158,7 @@ export default function ChallengesPage() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-atelier-navy via-black to-atelier-darkRed flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center"
-        >
-          <div className="w-12 h-12 border-4 border-atelier-darkYellow border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white">Loading challenges...</p>
-        </motion.div>
-      </div>
-    );
-  }
+  // Removed page-level loading - global navigation loading handles this smoothly
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-atelier-navy via-black to-atelier-darkRed">

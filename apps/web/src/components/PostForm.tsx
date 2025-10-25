@@ -109,13 +109,16 @@ export default function PostForm({
       formData.append('file', file);
 
       const token = localStorage.getItem('access_token');
-      const response = await fetch('http://localhost:3001/community/upload', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      const response = await fetch(
+        'http://192.168.0.103:3001/community/upload',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
 
       if (!response.ok) {
         throw new Error('Upload failed');

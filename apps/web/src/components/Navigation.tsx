@@ -14,6 +14,7 @@ import {
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { User as UserType } from '@/types/community';
+import { useNavigation } from '@/contexts/NavigationContext';
 
 interface NavigationProps {
   currentPage?: string;
@@ -21,6 +22,7 @@ interface NavigationProps {
 
 export default function Navigation({ currentPage = '' }: NavigationProps) {
   const router = useRouter();
+  const { navigateWithLoading } = useNavigation();
   const [user, setUser] = useState<UserType | null>(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -63,7 +65,7 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="flex items-center space-x-3 cursor-pointer"
-              onClick={() => router.push('/')}
+              onClick={() => navigateWithLoading('/', router)}
             >
               <div className="w-8 h-8 rounded-lg overflow-hidden">
                 <Image
@@ -124,7 +126,7 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
                       whileTap={{ scale: 0.98 }}
                       onClick={() => {
                         setShowProfileMenu(false);
-                        router.push('/profile');
+                        navigateWithLoading('/profile', router);
                       }}
                       className="w-full flex items-center space-x-2 px-3 py-2 text-gray-300 hover:text-atelier-darkYellow hover:bg-white/10 rounded-lg transition-all duration-200"
                     >
@@ -138,7 +140,7 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
                       whileTap={{ scale: 0.98 }}
                       onClick={() => {
                         setShowProfileMenu(false);
-                        router.push('/profile/my-posts');
+                        navigateWithLoading('/profile/my-posts', router);
                       }}
                       className="w-full flex items-center space-x-2 px-3 py-2 text-gray-300 hover:text-atelier-darkYellow hover:bg-white/10 rounded-lg transition-all duration-200"
                     >
@@ -153,7 +155,7 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
                         whileTap={{ scale: 0.98 }}
                         onClick={() => {
                           setShowProfileMenu(false);
-                          router.push('/admin/challenges');
+                          navigateWithLoading('/admin/challenges', router);
                         }}
                         className="w-full flex items-center space-x-2 px-3 py-2 text-gray-300 hover:text-atelier-darkYellow hover:bg-white/10 rounded-lg transition-all duration-200"
                       >
@@ -198,7 +200,7 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
                     console.log('Navigating to:', item.path);
-                    router.push(item.path);
+                    navigateWithLoading(item.path, router);
                   }}
                   className={`flex flex-col items-center space-y-1 px-4 py-2 rounded-lg transition-all duration-200 ${
                     isActive

@@ -1,6 +1,6 @@
 import { User } from '@/types/community';
 
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = 'http://192.168.0.103:3001';
 
 class ApiError extends Error {
   constructor(

@@ -9,9 +9,11 @@ import HeroParallax from '@/components/HeroParallax';
 import PageTransition from '../components/PageTransition';
 import LoadingPage from '../components/LoadingPage';
 import Navigation from '@/components/Navigation';
+import { useNavigation } from '@/contexts/NavigationContext';
 
 export default function Home() {
   const router = useRouter();
+  const { navigateWithLoading } = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
   const [showFounderCard, setShowFounderCard] = useState(false);
   const [isFirstVisit, setIsFirstVisit] = useState(true);
@@ -32,7 +34,7 @@ export default function Home() {
   }, []);
 
   const handleBookSession = () => {
-    router.push('/login');
+    navigateWithLoading('/login', router);
   };
 
   return (
@@ -107,7 +109,9 @@ export default function Home() {
                     transition={{ duration: 0.8, delay: 0.8 }}
                   >
                     <motion.button
-                      onClick={() => router.push('/why-join-us')}
+                      onClick={() =>
+                        navigateWithLoading('/why-join-us', router)
+                      }
                       className="morph-button bg-gradient-to-r from-atelier-darkYellow to-yellow-400 hover:from-yellow-400 hover:to-atelier-darkYellow text-black font-bold py-3 px-6 rounded-lg text-base shadow-lg flex items-center space-x-2 accent-stroke focus:outline-none focus:ring-2 focus:ring-atelier-darkRed focus:ring-offset-2 focus:ring-offset-atelier-navy"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}

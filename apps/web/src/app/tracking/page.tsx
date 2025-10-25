@@ -49,7 +49,7 @@ export default function TrackingPage() {
         if (!token || !currentUserId) return;
 
         const response = await fetch(
-          `http://localhost:3001/attendance/user/${currentUserId}?month=${selectedMonth}`,
+          `http://192.168.0.103:3001/attendance/user/${currentUserId}?month=${selectedMonth}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -72,8 +72,8 @@ export default function TrackingPage() {
         setError('Failed to load attendance stats');
       }
     },
-    [selectedMonth]
-  ); // Remove user dependency
+    [selectedMonth, user?.gymId]
+  );
 
   const loadAllUsers = useCallback(async () => {
     try {
@@ -85,7 +85,7 @@ export default function TrackingPage() {
         return;
       }
 
-      const response = await fetch('http://localhost:3001/users', {
+      const response = await fetch('http://192.168.0.103:3001/users', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -135,8 +135,9 @@ export default function TrackingPage() {
       setError('Failed to load tracking data');
     } finally {
       setIsLoading(false);
+      // Global navigation loading handles the loading state automatically
     }
-  }, [router]); // Remove loadAttendanceStats and loadAllUsers from dependencies
+  }, [router, loadAttendanceStats, loadAllUsers]);
 
   useEffect(() => {
     loadUserAndStats();
@@ -159,14 +160,17 @@ export default function TrackingPage() {
         return;
       }
 
-      const response = await fetch('http://localhost:3001/attendance/checkin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({}),
-      });
+      const response = await fetch(
+        'http://192.168.0.103:3001/attendance/checkin',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({}),
+        }
+      );
 
       if (!response.ok) {
         if (response.status === 409) {
@@ -199,7 +203,7 @@ export default function TrackingPage() {
       }
 
       const response = await fetch(
-        `http://localhost:3001/attendance/checkin/${userId}`,
+        `http://192.168.0.103:3001/attendance/checkin/${userId}`,
         {
           method: 'POST',
           headers: {
@@ -234,20 +238,7 @@ export default function TrackingPage() {
     setSelectedMonth(month);
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-atelier-navy via-black to-atelier-darkRed flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center"
-        >
-          <div className="w-12 h-12 border-4 border-atelier-darkYellow border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white">Loading your stats data...</p>
-        </motion.div>
-      </div>
-    );
-  }
+  // Removed page-level loading - global navigation loading handles this smoothly
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-atelier-navy via-black to-atelier-darkRed">

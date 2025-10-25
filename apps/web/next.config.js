@@ -16,6 +16,10 @@ const nextConfig = {
       },
     ],
   },
+  // Enable mobile access by binding to all interfaces
+  experimental: {
+    serverComponentsExternalPackages: [],
+  },
 };
 
 module.exports = nextConfig;
