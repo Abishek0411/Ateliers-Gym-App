@@ -70,10 +70,14 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
   };
 
   const setPageLoaded = () => {
-    // Smart loading detection - immediately hide loading when page signals it's ready
+    // Smart loading detection with minimum display time
     if (isLoading) {
-      console.log('Page loaded signal received, hiding loading');
-      resetLoading();
+      console.log('Page loaded signal received, scheduling loading hide');
+      // Ensure minimum 500ms display time for better UX
+      setTimeout(() => {
+        console.log('Hiding loading after minimum display time');
+        resetLoading();
+      }, 500);
     }
   };
 
@@ -103,13 +107,13 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // Smart timeout based on page complexity
+    // Smart timeout based on page complexity - ensure minimum visibility
     const getTimeoutForPath = (path: string) => {
-      if (path === '/' || path === '/login') return 600; // Home/login are fast
-      if (path === '/community') return 800; // Community needs data fetch
-      if (path === '/challenges') return 700; // Challenges need API call
-      if (path === '/tracking') return 900; // Tracking needs stats
-      return 800; // Default timeout
+      if (path === '/' || path === '/login') return 800; // Minimum 800ms for visibility
+      if (path === '/community') return 1000; // Community needs data fetch
+      if (path === '/challenges') return 900; // Challenges need API call
+      if (path === '/tracking') return 1200; // Tracking needs stats
+      return 1000; // Default timeout
     };
 
     const timeoutDuration = getTimeoutForPath(path);
