@@ -35,18 +35,36 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
     }
   }, []);
 
-  // Debug: Add a way to reset loading state if stuck
+  // Enhanced safety mechanism: Multiple fallbacks for stuck navigation
   useEffect(() => {
     if (isLoading) {
       console.log('Navigation loading state is active');
-      const debugTimeout = setTimeout(() => {
+
+      // Primary safety timeout
+      const primaryTimeout = setTimeout(() => {
         console.warn(
-          'Navigation loading state has been active for too long, auto-resetting'
+          'Primary safety timeout: Navigation loading state stuck, auto-resetting'
         );
         resetLoading();
-      }, 3000);
+      }, 2000); // Reduced to 2 seconds for faster recovery
 
-      return () => clearTimeout(debugTimeout);
+      // Secondary safety timeout (backup)
+      const secondaryTimeout = setTimeout(() => {
+        console.error(
+          'Secondary safety timeout: Force resetting navigation state'
+        );
+        resetLoading();
+        // Force reload if still stuck
+        if (isLoading) {
+          console.error('Navigation still stuck, forcing page reload');
+          window.location.reload();
+        }
+      }, 5000);
+
+      return () => {
+        clearTimeout(primaryTimeout);
+        clearTimeout(secondaryTimeout);
+      };
     }
   }, [isLoading, resetLoading]);
 
@@ -255,7 +273,18 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
                     console.log('Navigating to:', item.path);
-                    navigateWithLoading(item.path, router);
+                    // Add safety check before navigation
+                    if (isLoading) {
+                      console.warn(
+                        'Navigation already in progress, resetting and retrying'
+                      );
+                      resetLoading();
+                      setTimeout(() => {
+                        navigateWithLoading(item.path, router);
+                      }, 100);
+                    } else {
+                      navigateWithLoading(item.path, router);
+                    }
                   }}
                   className={`flex flex-col items-center space-y-1 px-4 py-2 rounded-lg transition-all duration-200 ${
                     isActive
@@ -303,6 +332,31 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
           </div>
         </div>
       </motion.nav>
+
+      {/* Navigation stuck indicator and manual reset */}
+      {isLoading && (
+        <div className="fixed top-20 right-4 z-50">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="bg-red-500/90 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-red-400/30"
+          >
+            <div className="flex items-center space-x-2 text-white text-sm">
+              <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+              <span>Navigation loading...</span>
+              <button
+                onClick={() => {
+                  console.log('Manual navigation reset triggered');
+                  resetLoading();
+                }}
+                className="ml-2 px-2 py-1 bg-white/20 hover:bg-white/30 rounded text-xs transition-colors"
+              >
+                Reset
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       {/* Click outside to close profile menu */}
       {showProfileMenu && (

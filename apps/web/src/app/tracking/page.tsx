@@ -112,21 +112,15 @@ export default function TrackingPage() {
 
       const userData = localStorage.getItem('user');
       if (userData) {
-        setUser(JSON.parse(userData));
-      }
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+        setError(null); // Clear any previous errors
 
-      setError(null); // Clear any previous errors
+        // Load attendance stats
+        await loadAttendanceStats(parsedUser.gymId);
 
-      // Load attendance stats for all users
-      if (userData) {
-        const user = JSON.parse(userData);
-        await loadAttendanceStats(user.gymId);
-      }
-
-      // Only load all users for trainers and admins (for manual check-in feature)
-      if (userData) {
-        const user = JSON.parse(userData);
-        if (user.role === 'trainer' || user.role === 'admin') {
+        // Only load all users for trainers and admins (for manual check-in feature)
+        if (parsedUser.role === 'trainer' || parsedUser.role === 'admin') {
           await loadAllUsers();
         }
       }
@@ -137,7 +131,7 @@ export default function TrackingPage() {
       setIsLoading(false);
       // Global navigation loading handles the loading state automatically
     }
-  }, [router, loadAttendanceStats, loadAllUsers]);
+  }, [router]); // Removed loadAttendanceStats and loadAllUsers from dependencies to prevent circular deps
 
   useEffect(() => {
     loadUserAndStats();

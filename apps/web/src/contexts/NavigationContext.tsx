@@ -21,6 +21,7 @@ const NavigationContext = createContext<NavigationContextType | undefined>(
 
 export function NavigationProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   // Safety mechanism: Auto-reset loading state if it gets stuck
   useEffect(() => {
@@ -28,21 +29,52 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       const safetyTimeout = setTimeout(() => {
         console.warn('Navigation loading state stuck, auto-resetting');
         setIsLoading(false);
-      }, 5000); // 5 second safety timeout
+        setTimeoutId(null);
+      }, 3000); // Reduced to 3 seconds for faster recovery
 
-      return () => clearTimeout(safetyTimeout);
+      setTimeoutId(safetyTimeout);
+
+      return () => {
+        clearTimeout(safetyTimeout);
+        setTimeoutId(null);
+      };
     }
   }, [isLoading]);
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [timeoutId]);
+
   const setLoading = (loading: boolean) => {
+    // Clear any existing timeout when manually setting loading state
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      setTimeoutId(null);
+    }
     setIsLoading(loading);
   };
 
   const resetLoading = () => {
+    // Clear any existing timeout
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      setTimeoutId(null);
+    }
     setIsLoading(false);
   };
 
   const navigateWithLoading = (path: string, router: any) => {
+    // Clear any existing timeout
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      setTimeoutId(null);
+    }
+
     // Ensure we're not already in a loading state
     if (isLoading) {
       console.warn(
@@ -51,17 +83,25 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    console.log('Starting navigation to:', path);
     setIsLoading(true);
-    router.push(path);
 
-    // Set a longer timeout to ensure data loading completes
-    // This provides a smooth experience while data loads
-    const timeoutId = setTimeout(() => {
+    try {
+      router.push(path);
+    } catch (error) {
+      console.error('Navigation error:', error);
       setIsLoading(false);
-    }, 1000);
+      return;
+    }
 
-    // Store timeout ID for potential cleanup
-    return () => clearTimeout(timeoutId);
+    // Set a timeout to ensure loading state is reset
+    const newTimeoutId = setTimeout(() => {
+      console.log('Navigation timeout reached, resetting loading state');
+      setIsLoading(false);
+      setTimeoutId(null);
+    }, 1500); // Increased timeout for better UX
+
+    setTimeoutId(newTimeoutId);
   };
 
   return (
