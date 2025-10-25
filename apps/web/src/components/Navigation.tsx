@@ -22,7 +22,7 @@ interface NavigationProps {
 
 export default function Navigation({ currentPage = '' }: NavigationProps) {
   const router = useRouter();
-  const { navigateWithLoading } = useNavigation();
+  const { navigateWithLoading, isLoading, resetLoading } = useNavigation();
   const [user, setUser] = useState<UserType | null>(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -32,6 +32,21 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
       setUser(JSON.parse(userData));
     }
   }, []);
+
+  // Debug: Add a way to reset loading state if stuck
+  useEffect(() => {
+    if (isLoading) {
+      console.log('Navigation loading state is active');
+      const debugTimeout = setTimeout(() => {
+        console.warn(
+          'Navigation loading state has been active for too long, auto-resetting'
+        );
+        resetLoading();
+      }, 3000);
+
+      return () => clearTimeout(debugTimeout);
+    }
+  }, [isLoading, resetLoading]);
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');

@@ -152,6 +152,7 @@ export default function TrackingPage() {
   const handleCheckIn = async () => {
     if (!user) return;
 
+    console.log('Starting check-in process...');
     setIsCheckingIn(true);
     try {
       const token = localStorage.getItem('access_token');
@@ -180,12 +181,15 @@ export default function TrackingPage() {
         throw new Error('Failed to check in');
       }
 
+      console.log('Check-in successful, refreshing stats...');
       // Refresh stats after successful check-in
       await loadAttendanceStats(user.gymId);
+      console.log('Stats refreshed successfully');
     } catch (error) {
       console.error('Failed to check in:', error);
       setError('Failed to check in. Please try again.');
     } finally {
+      console.log('Check-in process completed');
       setIsCheckingIn(false);
     }
   };
