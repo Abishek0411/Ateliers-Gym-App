@@ -17,33 +17,19 @@ export default function Home() {
   const [isFirstVisit, setIsFirstVisit] = useState(true);
 
   useEffect(() => {
-    // Check if this is the user's first visit
-    const hasVisitedBefore = localStorage.getItem('hasVisitedHome');
-
-    if (hasVisitedBefore) {
-      // Not first visit - skip loading animation
-      setIsLoading(false);
-      setIsFirstVisit(false);
-    } else {
-      // First visit - show loading animation
-      localStorage.setItem('hasVisitedHome', 'true');
-      setIsFirstVisit(true);
-    }
+    // Always show loading animation on Home page refresh to flaunt the cool loading
+    // This creates an impressive experience every time users visit the home page
+    setIsFirstVisit(true);
   }, []);
 
   useEffect(() => {
-    if (isFirstVisit) {
-      // Show founder card after loading completes (only on first visit)
-      const timer = setTimeout(() => {
-        setShowFounderCard(true);
-      }, 3500); // Slightly after loading completes
-
-      return () => clearTimeout(timer);
-    } else {
-      // Not first visit - show founder card immediately
+    // Show founder card after loading completes
+    const timer = setTimeout(() => {
       setShowFounderCard(true);
-    }
-  }, [isFirstVisit]);
+    }, 3500); // Slightly after loading completes
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleBookSession = () => {
     router.push('/login');
