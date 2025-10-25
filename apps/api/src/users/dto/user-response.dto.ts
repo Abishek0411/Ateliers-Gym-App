@@ -12,4 +12,35 @@ export class UserResponseDto {
   lastLogin?: Date;
   createdAt: Date;
   updatedAt: Date;
+
+  // Extended profile fields
+  dob?: Date;
+  gender?: 'male' | 'female' | 'other';
+  heightCm?: number;
+  weightKg?: number;
+  goal?:
+    | 'lose_weight'
+    | 'gain_muscle'
+    | 'maintain'
+    | 'performance'
+    | 'general_fitness';
+  preferredTrainerId?: string;
+  emergencyContact?: {
+    name?: string;
+    phone?: string;
+  };
+  profileImage?: {
+    url: string;
+    publicId?: string;
+  };
+  measurements?: Array<{
+    _id?: string;
+    date: Date;
+    weightKg?: number;
+    chestCm?: number;
+    waistCm?: number;
+    hipsCm?: number;
+    notes?: string;
+  }>;
+  isProfileComplete?: boolean;
 }

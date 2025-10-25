@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 
 export type UserDocument = User &
   Document & {
@@ -41,6 +41,86 @@ export class User {
 
   @Prop({ default: Date.now })
   lastLogin?: Date;
+
+  // Profile completion fields
+  @Prop()
+  dob?: Date; // Date of birth
+
+  @Prop({ enum: ['male', 'female', 'other'] })
+  gender?: 'male' | 'female' | 'other';
+
+  @Prop({ min: 50, max: 250 })
+  heightCm?: number; // Height in centimeters
+
+  @Prop({ min: 20, max: 300 })
+  weightKg?: number; // Weight in kilograms
+
+  @Prop({
+    enum: [
+      'lose_weight',
+      'gain_muscle',
+      'maintain',
+      'performance',
+      'general_fitness',
+    ],
+  })
+  goal?:
+    | 'lose_weight'
+    | 'gain_muscle'
+    | 'maintain'
+    | 'performance'
+    | 'general_fitness';
+
+  @Prop()
+  preferredTrainerId?: string; // gymId of preferred trainer
+
+  @Prop({
+    type: {
+      name: { type: String },
+      phone: { type: String },
+    },
+  })
+  emergencyContact?: {
+    name?: string;
+    phone?: string;
+  };
+
+  @Prop({
+    type: {
+      url: { type: String, required: true },
+      publicId: { type: String },
+    },
+  })
+  profileImage?: {
+    url: string;
+    publicId?: string;
+  };
+
+  @Prop({
+    type: [
+      {
+        date: { type: Date, default: Date.now },
+        weightKg: { type: Number, min: 20, max: 300 },
+        chestCm: { type: Number, min: 50, max: 200 },
+        waistCm: { type: Number, min: 50, max: 200 },
+        hipsCm: { type: Number, min: 50, max: 200 },
+        notes: { type: String },
+      },
+    ],
+    default: [],
+  })
+  measurements?: Array<{
+    _id?: MongooseSchema.Types.ObjectId;
+    date: Date;
+    weightKg?: number;
+    chestCm?: number;
+    waistCm?: number;
+    hipsCm?: number;
+    notes?: string;
+  }>;
+
+  @Prop({ default: false })
+  isProfileComplete?: boolean; // Flag to track if profile is complete
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

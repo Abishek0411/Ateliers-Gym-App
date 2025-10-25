@@ -45,11 +45,50 @@ export interface UploadResponse {
 }
 
 export interface User {
+  id?: string;
   gymId: string;
   name: string;
   role: 'member' | 'trainer' | 'admin';
-  membershipType: 'basic' | 'premium' | 'vip';
-  joinDate: string;
+  membershipType: 'Basic' | 'Premium' | 'VIP';
+  email?: string;
+  phone?: string;
+  profileImageUrl?: string;
+  achievements?: string[];
+  favoriteWorkouts?: string[];
+  lastLogin?: string;
+  createdAt?: string;
+  updatedAt?: string;
+
+  // Extended profile fields
+  dob?: string;
+  gender?: 'male' | 'female' | 'other';
+  heightCm?: number;
+  weightKg?: number;
+  goal?:
+    | 'lose_weight'
+    | 'gain_muscle'
+    | 'maintain'
+    | 'performance'
+    | 'general_fitness';
+  preferredTrainerId?: string;
+  emergencyContact?: {
+    name?: string;
+    phone?: string;
+  };
+  profileImage?: {
+    url: string;
+    publicId?: string;
+  };
+  measurements?: Array<{
+    _id?: string;
+    date: string;
+    weightKg?: number;
+    chestCm?: number;
+    waistCm?: number;
+    hipsCm?: number;
+    notes?: string;
+  }>;
+  isProfileComplete?: boolean;
 }
 
 export interface AuthResponse {
