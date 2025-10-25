@@ -14,15 +14,36 @@ export default function Home() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [showFounderCard, setShowFounderCard] = useState(false);
+  const [isFirstVisit, setIsFirstVisit] = useState(true);
 
   useEffect(() => {
-    // Show founder card after loading completes
-    const timer = setTimeout(() => {
-      setShowFounderCard(true);
-    }, 3500); // Slightly after loading completes
+    // Check if this is the user's first visit
+    const hasVisitedBefore = localStorage.getItem('hasVisitedHome');
 
-    return () => clearTimeout(timer);
+    if (hasVisitedBefore) {
+      // Not first visit - skip loading animation
+      setIsLoading(false);
+      setIsFirstVisit(false);
+    } else {
+      // First visit - show loading animation
+      localStorage.setItem('hasVisitedHome', 'true');
+      setIsFirstVisit(true);
+    }
   }, []);
+
+  useEffect(() => {
+    if (isFirstVisit) {
+      // Show founder card after loading completes (only on first visit)
+      const timer = setTimeout(() => {
+        setShowFounderCard(true);
+      }, 3500); // Slightly after loading completes
+
+      return () => clearTimeout(timer);
+    } else {
+      // Not first visit - show founder card immediately
+      setShowFounderCard(true);
+    }
+  }, [isFirstVisit]);
 
   const handleBookSession = () => {
     router.push('/login');
@@ -30,8 +51,10 @@ export default function Home() {
 
   return (
     <>
-      {/* Loading Page */}
-      <LoadingPage onComplete={() => setIsLoading(false)} duration={3000} />
+      {/* Loading Page - Only show on first visit */}
+      {isFirstVisit && (
+        <LoadingPage onComplete={() => setIsLoading(false)} duration={3000} />
+      )}
 
       {/* Main Page */}
       {!isLoading && (
