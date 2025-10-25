@@ -311,7 +311,10 @@ export class UsersService {
       preferredTrainerId: user.preferredTrainerId,
       emergencyContact: user.emergencyContact,
       profileImage: user.profileImage,
-      measurements: user.measurements,
+      measurements: user.measurements?.map(measurement => ({
+        ...measurement,
+        _id: measurement._id?.toString(),
+      })),
       isProfileComplete: user.isProfileComplete,
     };
   }
