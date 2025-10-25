@@ -104,6 +104,20 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
                       </p>
                     </div>
 
+                    {/* My Profile Option */}
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        router.push('/profile');
+                      }}
+                      className="w-full flex items-center space-x-2 px-3 py-2 text-gray-300 hover:text-atelier-darkYellow hover:bg-white/10 rounded-lg transition-all duration-200"
+                    >
+                      <User className="w-4 h-4" />
+                      <span className="text-sm">My Profile</span>
+                    </motion.button>
+
                     {/* My Posts Option */}
                     <motion.button
                       whileHover={{ scale: 1.02 }}

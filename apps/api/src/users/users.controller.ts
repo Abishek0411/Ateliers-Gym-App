@@ -61,6 +61,12 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  // Profile management endpoints - MUST come before :gymId route
+  @Get('me')
+  async getMyProfile(@Request() req: { user: User }): Promise<UserResponseDto> {
+    return this.usersService.getMyProfile(req.user.gymId);
+  }
+
   @Get(':gymId')
   async findByGymId(
     @Param('gymId') gymId: string,
@@ -92,11 +98,6 @@ export class UsersController {
   }
 
   // Profile management endpoints
-  @Get('me')
-  async getMyProfile(@Request() req: { user: User }): Promise<UserResponseDto> {
-    return this.usersService.getMyProfile(req.user.gymId);
-  }
-
   @Patch('me')
   async updateMyProfile(
     @Body() updateProfileDto: UpdateProfileDto,
