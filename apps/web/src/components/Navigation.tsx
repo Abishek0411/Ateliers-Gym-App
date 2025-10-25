@@ -10,6 +10,7 @@ import {
   FileText,
   Calendar,
   Trophy,
+  Loader2,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -25,6 +26,7 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
   const { navigateWithLoading, isLoading, resetLoading } = useNavigation();
   const [user, setUser] = useState<UserType | null>(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -48,10 +50,37 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
     }
   }, [isLoading, resetLoading]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('user');
-    router.push('/');
+  const handleLogout = async () => {
+    if (isLoggingOut) return; // Prevent multiple logout attempts
+
+    // Show confirmation dialog
+    const confirmed = window.confirm('Are you sure you want to logout?');
+    if (!confirmed) return;
+
+    setIsLoggingOut(true);
+    setShowProfileMenu(false); // Close profile menu immediately
+
+    try {
+      // Add a small delay for smooth UX
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      // Clear user data
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('user');
+
+      // Clear user state immediately for visual feedback
+      setUser(null);
+
+      // Reset navigation loading state
+      resetLoading();
+
+      // Navigate to home with loading
+      navigateWithLoading('/', router);
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   const navItems = [
@@ -180,13 +209,24 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
                     )}
 
                     <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      whileHover={{ scale: isLoggingOut ? 1 : 1.02 }}
+                      whileTap={{ scale: isLoggingOut ? 1 : 0.98 }}
                       onClick={handleLogout}
-                      className="w-full flex items-center space-x-2 px-3 py-2 text-gray-300 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-200"
+                      disabled={isLoggingOut}
+                      className={`w-full flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 ${
+                        isLoggingOut
+                          ? 'text-gray-500 cursor-not-allowed'
+                          : 'text-gray-300 hover:text-red-400 hover:bg-red-500/10'
+                      }`}
                     >
-                      <LogOut className="w-4 h-4" />
-                      <span className="text-sm">Logout</span>
+                      {isLoggingOut ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <LogOut className="w-4 h-4" />
+                      )}
+                      <span className="text-sm">
+                        {isLoggingOut ? 'Logging out...' : 'Logout'}
+                      </span>
                     </motion.button>
                   </motion.div>
                 )}
@@ -234,19 +274,30 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
             {/* Profile Tab */}
             {user && (
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                whileHover={{ scale: isLoggingOut ? 1 : 1.05 }}
+                whileTap={{ scale: isLoggingOut ? 1 : 0.95 }}
+                onClick={() =>
+                  !isLoggingOut && setShowProfileMenu(!showProfileMenu)
+                }
+                disabled={isLoggingOut}
                 className={`flex flex-col items-center space-y-1 px-4 py-2 rounded-lg transition-all duration-200 ${
-                  showProfileMenu
-                    ? 'text-atelier-darkYellow'
-                    : 'text-gray-400 hover:text-white'
+                  isLoggingOut
+                    ? 'text-gray-500 cursor-not-allowed'
+                    : showProfileMenu
+                      ? 'text-atelier-darkYellow'
+                      : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <User
-                  className={`w-5 h-5 ${showProfileMenu ? 'text-atelier-darkYellow' : ''}`}
-                />
-                <span className="text-xs font-medium">Profile</span>
+                {isLoggingOut ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <User
+                    className={`w-5 h-5 ${showProfileMenu ? 'text-atelier-darkYellow' : ''}`}
+                  />
+                )}
+                <span className="text-xs font-medium">
+                  {isLoggingOut ? 'Logging out...' : 'Profile'}
+                </span>
               </motion.button>
             )}
           </div>
