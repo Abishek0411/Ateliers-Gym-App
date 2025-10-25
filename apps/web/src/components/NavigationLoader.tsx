@@ -9,51 +9,59 @@ interface NavigationLoaderProps {
 
 export default function NavigationLoader({ isLoading }: NavigationLoaderProps) {
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {isLoading && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }} // Faster transition
           className="fixed inset-0 z-[9999] bg-gradient-to-br from-atelier-navy via-black to-atelier-darkRed flex items-center justify-center"
         >
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
+            initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ duration: 0.15 }} // Faster animation
             className="text-center"
           >
+            {/* Optimized spinner - lighter animation */}
             <motion.div
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="w-16 h-16 border-4 border-atelier-darkYellow border-t-transparent rounded-full mx-auto mb-6"
+              transition={{
+                duration: 0.8, // Faster rotation
+                repeat: Infinity,
+                ease: 'linear',
+              }}
+              className="w-12 h-12 border-3 border-atelier-darkYellow border-t-transparent rounded-full mx-auto mb-4"
             />
             <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-white text-xl font-semibold"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1, duration: 0.2 }} // Faster text animation
+              className="text-white text-lg font-medium"
             >
               Loading...
             </motion.p>
+            {/* Simplified dots animation */}
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="flex justify-center space-x-1 mt-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.2 }}
+              className="flex justify-center space-x-1 mt-3"
             >
               {[0, 1, 2].map(i => (
                 <motion.div
                   key={i}
-                  className="w-2 h-2 bg-atelier-darkYellow rounded-full"
+                  className="w-1.5 h-1.5 bg-atelier-darkYellow rounded-full"
                   animate={{
-                    scale: [1, 1.5, 1],
-                    opacity: [0.5, 1, 0.5],
+                    scale: [1, 1.3, 1],
+                    opacity: [0.6, 1, 0.6],
                   }}
                   transition={{
-                    duration: 1.5,
+                    duration: 1, // Faster animation
                     repeat: Infinity,
-                    delay: i * 0.2,
+                    delay: i * 0.15, // Reduced delay
                   }}
                 />
               ))}

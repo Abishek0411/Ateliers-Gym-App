@@ -10,6 +10,7 @@ import CloudinaryConfig from '@/components/CloudinaryConfig';
 import { Post, CreatePostData, User } from '@/types/community';
 import { communityApi } from '@/lib/api/community';
 import { Users, Plus } from 'lucide-react';
+import { useNavigation } from '@/contexts/NavigationContext';
 
 export default function CommunityPage() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -19,6 +20,7 @@ export default function CommunityPage() {
   const [error, setError] = useState<string | null>(null);
   const [showPostForm, setShowPostForm] = useState(false);
   const router = useRouter();
+  const { setPageLoaded } = useNavigation();
 
   const checkAuthAndLoadData = useCallback(async () => {
     try {
@@ -35,7 +37,8 @@ export default function CommunityPage() {
       setError('Failed to load community data');
     } finally {
       setIsLoading(false);
-      // Global navigation loading handles the loading state automatically
+      // Signal that page has loaded for smart loading detection
+      setPageLoaded();
     }
   }, [router]);
 

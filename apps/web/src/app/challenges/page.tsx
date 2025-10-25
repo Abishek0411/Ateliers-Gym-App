@@ -20,6 +20,7 @@ import {
   CheckCircle,
   Clock,
 } from 'lucide-react';
+import { useNavigation } from '@/contexts/NavigationContext';
 
 type FilterType = 'all' | 'active' | 'upcoming' | 'streak' | 'daily' | 'task';
 
@@ -33,6 +34,7 @@ export default function ChallengesPage() {
   const [hasMore, setHasMore] = useState(true);
   const [nextCursor, setNextCursor] = useState<string | undefined>();
   const router = useRouter();
+  const { setPageLoaded } = useNavigation();
 
   const loadChallenges = useCallback(
     async (cursor?: string, append = false) => {
@@ -107,7 +109,8 @@ export default function ChallengesPage() {
         await loadChallenges();
       } finally {
         setIsLoading(false);
-        // Global navigation loading handles the loading state automatically
+        // Signal that page has loaded for smart loading detection
+        setPageLoaded();
       }
     };
 

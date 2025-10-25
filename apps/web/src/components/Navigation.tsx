@@ -35,36 +35,18 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
     }
   }, []);
 
-  // Enhanced safety mechanism: Multiple fallbacks for stuck navigation
+  // Optimized safety mechanism: Less aggressive, more efficient
   useEffect(() => {
     if (isLoading) {
       console.log('Navigation loading state is active');
 
-      // Primary safety timeout
-      const primaryTimeout = setTimeout(() => {
-        console.warn(
-          'Primary safety timeout: Navigation loading state stuck, auto-resetting'
-        );
+      // Single optimized safety timeout
+      const safetyTimeout = setTimeout(() => {
+        console.warn('Navigation safety timeout: Auto-resetting loading state');
         resetLoading();
-      }, 2000); // Reduced to 2 seconds for faster recovery
+      }, 3000); // Increased to 3 seconds to allow proper loading
 
-      // Secondary safety timeout (backup)
-      const secondaryTimeout = setTimeout(() => {
-        console.error(
-          'Secondary safety timeout: Force resetting navigation state'
-        );
-        resetLoading();
-        // Force reload if still stuck
-        if (isLoading) {
-          console.error('Navigation still stuck, forcing page reload');
-          window.location.reload();
-        }
-      }, 5000);
-
-      return () => {
-        clearTimeout(primaryTimeout);
-        clearTimeout(secondaryTimeout);
-      };
+      return () => clearTimeout(safetyTimeout);
     }
   }, [isLoading, resetLoading]);
 
@@ -333,26 +315,17 @@ export default function Navigation({ currentPage = '' }: NavigationProps) {
         </div>
       </motion.nav>
 
-      {/* Navigation stuck indicator and manual reset */}
+      {/* Optimized navigation indicator - only show if truly stuck */}
       {isLoading && (
         <div className="fixed top-20 right-4 z-50">
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-red-500/90 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-red-400/30"
+            className="bg-blue-500/90 backdrop-blur-sm rounded-lg p-2 shadow-lg border border-blue-400/30"
           >
-            <div className="flex items-center space-x-2 text-white text-sm">
-              <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
-              <span>Navigation loading...</span>
-              <button
-                onClick={() => {
-                  console.log('Manual navigation reset triggered');
-                  resetLoading();
-                }}
-                className="ml-2 px-2 py-1 bg-white/20 hover:bg-white/30 rounded text-xs transition-colors"
-              >
-                Reset
-              </button>
+            <div className="flex items-center space-x-2 text-white text-xs">
+              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+              <span>Loading...</span>
             </div>
           </motion.div>
         </div>
